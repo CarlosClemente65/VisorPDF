@@ -32,12 +32,12 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmVisorPDF));
             pnlTitulo = new Panel();
             btnFijar = new Button();
-            pnlSuperior = new Panel();
             label1 = new Label();
             btnMaximizar = new Button();
             ctrlVentana = new ImageList(components);
             btnMinimizar = new Button();
             btnCerrar = new Button();
+            pnlSuperior = new Panel();
             pnlHerramientas = new Panel();
             btnPrimero = new Button();
             ctrlPDF = new ImageList(components);
@@ -50,28 +50,26 @@
             pnlInferior = new Panel();
             pnlTitulo.SuspendLayout();
             pnlHerramientas.SuspendLayout();
-            pnlVisor.SuspendLayout();
             SuspendLayout();
             // 
             // pnlTitulo
             // 
             pnlTitulo.BackColor = Color.SandyBrown;
             pnlTitulo.Controls.Add(btnFijar);
-            pnlTitulo.Controls.Add(pnlSuperior);
             pnlTitulo.Controls.Add(label1);
             pnlTitulo.Controls.Add(btnMaximizar);
             pnlTitulo.Controls.Add(btnMinimizar);
             pnlTitulo.Controls.Add(btnCerrar);
             pnlTitulo.Dock = DockStyle.Top;
-            pnlTitulo.Location = new Point(0, 0);
+            pnlTitulo.Location = new Point(3, 3);
             pnlTitulo.Name = "pnlTitulo";
-            pnlTitulo.Size = new Size(800, 40);
+            pnlTitulo.Size = new Size(492, 40);
             pnlTitulo.TabIndex = 0;
             pnlTitulo.MouseDown += pnlTitulo_MouseDown;
             // 
             // btnFijar
             // 
-            btnFijar.Anchor = AnchorStyles.Top;
+            btnFijar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnFijar.BackColor = Color.Transparent;
             btnFijar.FlatAppearance.BorderSize = 0;
             btnFijar.FlatAppearance.MouseOverBackColor = Color.PeachPuff;
@@ -79,24 +77,14 @@
             btnFijar.Font = new Font("Calibri", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnFijar.Image = Properties.Resources.Activo;
             btnFijar.ImageAlign = ContentAlignment.MiddleRight;
-            btnFijar.Location = new Point(335, 2);
+            btnFijar.Location = new Point(246, 1);
             btnFijar.Name = "btnFijar";
-            btnFijar.Size = new Size(130, 36);
+            btnFijar.Size = new Size(92, 38);
             btnFijar.TabIndex = 4;
-            btnFijar.Text = "Fijar ventana";
-            btnFijar.TextAlign = ContentAlignment.MiddleLeft;
+            btnFijar.Text = "Fijar \r\nventana";
+            btnFijar.TextImageRelation = TextImageRelation.TextBeforeImage;
             btnFijar.UseVisualStyleBackColor = false;
             btnFijar.Click += btnFijar_Click;
-            // 
-            // pnlSuperior
-            // 
-            pnlSuperior.BackColor = Color.LightGray;
-            pnlSuperior.Cursor = Cursors.SizeNS;
-            pnlSuperior.Dock = DockStyle.Top;
-            pnlSuperior.Location = new Point(0, 0);
-            pnlSuperior.Name = "pnlSuperior";
-            pnlSuperior.Size = new Size(800, 3);
-            pnlSuperior.TabIndex = 1;
             // 
             // label1
             // 
@@ -117,7 +105,7 @@
             btnMaximizar.FlatStyle = FlatStyle.Flat;
             btnMaximizar.ImageIndex = 1;
             btnMaximizar.ImageList = ctrlVentana;
-            btnMaximizar.Location = new Point(709, 2);
+            btnMaximizar.Location = new Point(401, 2);
             btnMaximizar.Name = "btnMaximizar";
             btnMaximizar.Size = new Size(36, 36);
             btnMaximizar.TabIndex = 2;
@@ -142,7 +130,7 @@
             btnMinimizar.FlatStyle = FlatStyle.Flat;
             btnMinimizar.ImageIndex = 2;
             btnMinimizar.ImageList = ctrlVentana;
-            btnMinimizar.Location = new Point(654, 2);
+            btnMinimizar.Location = new Point(346, 2);
             btnMinimizar.Name = "btnMinimizar";
             btnMinimizar.Size = new Size(36, 36);
             btnMinimizar.TabIndex = 1;
@@ -158,12 +146,22 @@
             btnCerrar.FlatStyle = FlatStyle.Flat;
             btnCerrar.ImageIndex = 0;
             btnCerrar.ImageList = ctrlVentana;
-            btnCerrar.Location = new Point(761, 2);
+            btnCerrar.Location = new Point(453, 2);
             btnCerrar.Name = "btnCerrar";
             btnCerrar.Size = new Size(36, 36);
             btnCerrar.TabIndex = 0;
             btnCerrar.UseVisualStyleBackColor = false;
             btnCerrar.Click += btnCerrar_Click;
+            // 
+            // pnlSuperior
+            // 
+            pnlSuperior.BackColor = Color.Maroon;
+            pnlSuperior.Cursor = Cursors.SizeNS;
+            pnlSuperior.Dock = DockStyle.Top;
+            pnlSuperior.Location = new Point(0, 0);
+            pnlSuperior.Name = "pnlSuperior";
+            pnlSuperior.Size = new Size(500, 3);
+            pnlSuperior.TabIndex = 1;
             // 
             // pnlHerramientas
             // 
@@ -174,9 +172,9 @@
             pnlHerramientas.Controls.Add(btnUltimo);
             pnlHerramientas.Dock = DockStyle.Top;
             pnlHerramientas.ForeColor = Color.Black;
-            pnlHerramientas.Location = new Point(0, 40);
+            pnlHerramientas.Location = new Point(3, 43);
             pnlHerramientas.Name = "pnlHerramientas";
-            pnlHerramientas.Size = new Size(800, 40);
+            pnlHerramientas.Size = new Size(492, 40);
             pnlHerramientas.TabIndex = 1;
             // 
             // btnPrimero
@@ -247,43 +245,42 @@
             // 
             // pnlVisor
             // 
-            pnlVisor.BackColor = Color.Black;
-            pnlVisor.Controls.Add(pnlIzquierdo);
-            pnlVisor.Controls.Add(pnlDerecho);
-            pnlVisor.Controls.Add(pnlInferior);
+            pnlVisor.BackColor = Color.Snow;
             pnlVisor.Dock = DockStyle.Fill;
-            pnlVisor.Location = new Point(0, 80);
+            pnlVisor.Location = new Point(0, 0);
             pnlVisor.Name = "pnlVisor";
-            pnlVisor.Size = new Size(800, 520);
+            pnlVisor.Size = new Size(500, 600);
             pnlVisor.TabIndex = 2;
             // 
             // pnlIzquierdo
             // 
-            pnlIzquierdo.BackColor = Color.LightGray;
+            pnlIzquierdo.BackColor = Color.Maroon;
             pnlIzquierdo.Cursor = Cursors.SizeWE;
             pnlIzquierdo.Dock = DockStyle.Left;
-            pnlIzquierdo.Location = new Point(0, 0);
+            pnlIzquierdo.Location = new Point(0, 3);
             pnlIzquierdo.Name = "pnlIzquierdo";
-            pnlIzquierdo.Size = new Size(3, 517);
+            pnlIzquierdo.Size = new Size(3, 594);
             pnlIzquierdo.TabIndex = 2;
             // 
             // pnlDerecho
             // 
-            pnlDerecho.BackColor = Color.LightGray;
+            pnlDerecho.BackColor = Color.Maroon;
             pnlDerecho.Cursor = Cursors.SizeWE;
-            pnlDerecho.Location = new Point(797, 0);
+            pnlDerecho.Dock = DockStyle.Right;
+            pnlDerecho.Location = new Point(495, 3);
             pnlDerecho.Name = "pnlDerecho";
-            pnlDerecho.Size = new Size(3, 557);
+            pnlDerecho.Size = new Size(5, 594);
             pnlDerecho.TabIndex = 1;
+            pnlDerecho.MouseDown += pnlDerecho_MouseDown;
             // 
             // pnlInferior
             // 
-            pnlInferior.BackColor = Color.LightGray;
+            pnlInferior.BackColor = Color.Maroon;
             pnlInferior.Cursor = Cursors.SizeNS;
             pnlInferior.Dock = DockStyle.Bottom;
-            pnlInferior.Location = new Point(0, 517);
+            pnlInferior.Location = new Point(0, 597);
             pnlInferior.Name = "pnlInferior";
-            pnlInferior.Size = new Size(800, 3);
+            pnlInferior.Size = new Size(500, 3);
             pnlInferior.TabIndex = 0;
             // 
             // frmVisorPDF
@@ -291,21 +288,24 @@
             AllowDrop = true;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 600);
-            Controls.Add(pnlVisor);
+            ClientSize = new Size(500, 600);
             Controls.Add(pnlHerramientas);
             Controls.Add(pnlTitulo);
+            Controls.Add(pnlIzquierdo);
+            Controls.Add(pnlDerecho);
+            Controls.Add(pnlInferior);
+            Controls.Add(pnlSuperior);
+            Controls.Add(pnlVisor);
             DoubleBuffered = true;
             Font = new Font("Calibri", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             FormBorderStyle = FormBorderStyle.None;
-            MinimumSize = new Size(800, 600);
+            MinimumSize = new Size(400, 600);
             Name = "frmVisorPDF";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Form1";
             pnlTitulo.ResumeLayout(false);
             pnlTitulo.PerformLayout();
             pnlHerramientas.ResumeLayout(false);
-            pnlVisor.ResumeLayout(false);
             ResumeLayout(false);
         }
 

@@ -15,12 +15,19 @@ namespace VisorPDF
             IntPtr wParam,
             IntPtr lParam);
 
+        // Constantes para mover la ventana
         private const int WM_NCLBUTTONDOWN = 0xA1;
         private const int HTCAPTION = 0x2;
+
+        // Constantes para los bordes de la ventana
+        private const int HTRIGHT = 11;
+
+
 
         public frmVisorPDF()
         {
             InitializeComponent();
+            this.Cursor = Cursors.Default;
             this.TopMost = true;
         }
 
@@ -31,7 +38,7 @@ namespace VisorPDF
 
         private void btnMaximizar_Click(object sender, EventArgs e)
         {
-            if(this.WindowState == FormWindowState.Maximized)
+            if (this.WindowState == FormWindowState.Maximized)
             {
                 this.WindowState = FormWindowState.Normal;
             }
@@ -54,13 +61,13 @@ namespace VisorPDF
 
         private void pnlTitulo_MouseDown(object sender, MouseEventArgs e)
         {
-            if(e.Button != MouseButtons.Left)
+            if (e.Button != MouseButtons.Left)
                 return;
 
             // Doble clic para maximizar/restaurar
-            if(e.Clicks == 2)
+            if (e.Clicks == 2)
             {
-                if(this.WindowState == FormWindowState.Maximized)
+                if (this.WindowState == FormWindowState.Maximized)
                 {
                     this.WindowState = FormWindowState.Normal;
                 }
@@ -76,5 +83,29 @@ namespace VisorPDF
             ReleaseCapture();
             SendMessage(this.Handle, WM_NCLBUTTONDOWN, (IntPtr)HTCAPTION, IntPtr.Zero);
         }
+
+        private void pnlDerecho_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ReleaseCapture();
+                SendMessage(
+                    this.Handle,
+                    WM_NCLBUTTONDOWN,
+                    (IntPtr)HTRIGHT,
+                    IntPtr.Zero
+                );
+            }
+        }
+
+        //private void pnlDerecho_MouseUp(object sender, MouseEventArgs e)
+        //{
+        //    this.Cursor = Cursors.Default;
+        //}
+
+        //private void pnlDerecho_MouseLeave(object sender, EventArgs e)
+        //{
+        //    this.Cursor = Cursors.Default;
+        //}
     }
 }
