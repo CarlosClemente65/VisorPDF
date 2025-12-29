@@ -63,9 +63,9 @@ namespace VisorPDF.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Activo {
+        internal static System.Drawing.Bitmap Aumentar {
             get {
-                object obj = ResourceManager.GetObject("Activo", resourceCulture);
+                object obj = ResourceManager.GetObject("Aumentar", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -83,9 +83,9 @@ namespace VisorPDF.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Cerrar {
+        internal static System.Drawing.Bitmap Cerrar_ventana {
             get {
-                object obj = ResourceManager.GetObject("Cerrar", resourceCulture);
+                object obj = ResourceManager.GetObject("Cerrar_ventana", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -93,9 +93,9 @@ namespace VisorPDF.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Inactivo {
+        internal static System.Drawing.Bitmap Disminuir {
             get {
-                object obj = ResourceManager.GetObject("Inactivo", resourceCulture);
+                object obj = ResourceManager.GetObject("Disminuir", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -103,9 +103,9 @@ namespace VisorPDF.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Maximizar {
+        internal static System.Drawing.Bitmap Maximizar_ventana {
             get {
-                object obj = ResourceManager.GetObject("Maximizar", resourceCulture);
+                object obj = ResourceManager.GetObject("Maximizar_ventana", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -113,9 +113,9 @@ namespace VisorPDF.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Minimizar {
+        internal static System.Drawing.Bitmap Minimizar_ventana {
             get {
-                object obj = ResourceManager.GetObject("Minimizar", resourceCulture);
+                object obj = ResourceManager.GetObject("Minimizar_ventana", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

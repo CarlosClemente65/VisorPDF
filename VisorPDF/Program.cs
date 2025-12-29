@@ -1,9 +1,9 @@
 using System;
 using System.Reflection;
 
-[assembly: AssemblyVersion("0.2.0.0")]
-[assembly: AssemblyFileVersion("0.2.0.0")]
-[assembly: AssemblyInformationalVersion("0.2.0.0")]
+[assembly: AssemblyVersion("0.3.0.0")]
+[assembly: AssemblyFileVersion("0.3.0.0")]
+[assembly: AssemblyInformationalVersion("0.3.0.0")]
 
 // Información del producto
 [assembly: AssemblyProduct("Visor PDF")]

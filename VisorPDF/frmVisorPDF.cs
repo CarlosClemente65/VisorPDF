@@ -34,7 +34,12 @@ namespace VisorPDF
         private Cursor cursorRedimension;
         private bool redimensionando = false;
 
+        // Variables para controlar el zoom
+        private int zoomActual = 100;
 
+
+        // Variables para gestionar el archivo PDF
+        private string rutaArchivoPDF = string.Empty;
 
         public frmVisorPDF()
         {
@@ -55,22 +60,28 @@ namespace VisorPDF
             toolTip1.SetToolTip(btnUltimo, "Ultima página");
             toolTip1.SetToolTip(btnAvance, "Página siguiente");
             toolTip1.SetToolTip(btnRetroceso, "Página anterior");
+            toolTip1.SetToolTip(btnAumentar, "Aumentar zoom");
+            toolTip1.SetToolTip(btnDisminuir, "Disminuir zoom");
+            toolTip1.SetToolTip(txtZoom, "Establecer zoom (10% - 500%)");
+
+            // Mostramos el zoom inicial
+            ActualizarZoom();
         }
 
         private void btnMinimizar_Click(object sender, EventArgs e)
         {
-            this.WindowState = FormWindowState.Minimized;
+            WindowState = FormWindowState.Minimized;
         }
 
         private void btnMaximizar_Click(object sender, EventArgs e)
         {
-            if (this.WindowState == FormWindowState.Maximized)
+            if(WindowState == FormWindowState.Maximized)
             {
-                this.WindowState = FormWindowState.Normal;
+                WindowState = FormWindowState.Normal;
             }
             else
             {
-                this.WindowState = FormWindowState.Maximized;
+                WindowState = FormWindowState.Maximized;
             }
         }
 
@@ -81,21 +92,21 @@ namespace VisorPDF
 
         private void btnFijar_Click(object sender, EventArgs e)
         {
-            this.TopMost = !this.TopMost;
-            this.btnFijar.Image = this.TopMost ? Properties.Resources.Activo : Properties.Resources.Inactivo;
+            //this.TopMost = !this.TopMost;
+            //this.btnFijar.Image = this.TopMost ? Properties.Resources.Activo : Properties.Resources.Inactivo;
         }
 
 
         // Manejo del panel de título para mover y maximizar/restaurar
         private void pnlTitulo_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button != MouseButtons.Left)
+            if(e.Button != MouseButtons.Left)
                 return;
 
             // Doble clic para maximizar/restaurar
-            if (e.Clicks == 2)
+            if(e.Clicks == 2)
             {
-                if (this.WindowState == FormWindowState.Maximized)
+                if(this.WindowState == FormWindowState.Maximized)
                 {
                     this.WindowState = FormWindowState.Normal;
                 }
@@ -116,7 +127,7 @@ namespace VisorPDF
         #region Redimensionamiento de borde derecho
         private void pnlDerecho_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button != MouseButtons.Left)
+            if(e.Button != MouseButtons.Left)
                 return;
 
             ReleaseCapture();
@@ -124,12 +135,12 @@ namespace VisorPDF
             pnlDerecho.Cursor = cursorRedimension;
 
             // Esquina superior derecha
-            if (e.Y <= MARGEN_ESQUINA)
+            if(e.Y <= MARGEN_ESQUINA)
             {
                 SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTTOPRIGHT, 0);
             }
             // Esquina inferior derecha
-            else if (e.Y >= pnlDerecho.Height - MARGEN_ESQUINA)
+            else if(e.Y >= pnlDerecho.Height - MARGEN_ESQUINA)
             {
                 SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTBOTTOMRIGHT, 0);
             }
@@ -152,12 +163,12 @@ namespace VisorPDF
         private void pnlDerecho_MouseMove(object sender, MouseEventArgs e)
         {
             // Esquina superior derecha
-            if (e.Y <= MARGEN_ESQUINA)
+            if(e.Y <= MARGEN_ESQUINA)
             {
                 cursorRedimension = Cursors.SizeNESW;
             }
             // Esquina inferior derecha
-            else if (e.Y >= pnlDerecho.Height - MARGEN_ESQUINA)
+            else if(e.Y >= pnlDerecho.Height - MARGEN_ESQUINA)
             {
                 cursorRedimension = Cursors.SizeNWSE;
             }
@@ -174,7 +185,7 @@ namespace VisorPDF
         // Manejo del borde derecho al salir del área (restaura el cursor)
         private void pnlDerecho_MouseLeave(object sender, EventArgs e)
         {
-            if (!redimensionando)
+            if(!redimensionando)
             {
                 pnlDerecho.Cursor = Cursors.Default;
             }
@@ -187,7 +198,7 @@ namespace VisorPDF
         #region Redimensionamiento de borde izquierdo
         private void pnlIzquierdo_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button != MouseButtons.Left)
+            if(e.Button != MouseButtons.Left)
                 return;
 
             ReleaseCapture();
@@ -195,12 +206,12 @@ namespace VisorPDF
             pnlIzquierdo.Cursor = cursorRedimension;
 
             // Esquina superior izquierda
-            if (e.Y <= MARGEN_ESQUINA)
+            if(e.Y <= MARGEN_ESQUINA)
             {
                 SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTTOPLEFT, 0);
             }
             // Esquina inferior izquierda
-            else if (e.Y >= pnlIzquierdo.Height - MARGEN_ESQUINA)
+            else if(e.Y >= pnlIzquierdo.Height - MARGEN_ESQUINA)
             {
                 SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTBOTTOMLEFT, 0);
             }
@@ -223,12 +234,12 @@ namespace VisorPDF
         private void pnlIzquierdo_MouseMove(object sender, MouseEventArgs e)
         {
             // Esquina superior izquierda
-            if (e.Y <= MARGEN_ESQUINA)
+            if(e.Y <= MARGEN_ESQUINA)
             {
                 cursorRedimension = Cursors.SizeNWSE;
             }
             // Esquina inferior izquierda
-            else if (e.Y >= pnlIzquierdo.Height - MARGEN_ESQUINA)
+            else if(e.Y >= pnlIzquierdo.Height - MARGEN_ESQUINA)
             {
                 cursorRedimension = Cursors.SizeNESW;
             }
@@ -245,7 +256,7 @@ namespace VisorPDF
         // Manejo del borde izquierdo al salir del área (restaura el cursor)
         private void pnlIzquierdo_MouseLeave(object sender, EventArgs e)
         {
-            if (!redimensionando)
+            if(!redimensionando)
             {
                 pnlIzquierdo.Cursor = Cursors.Default;
             }
@@ -260,7 +271,7 @@ namespace VisorPDF
         // Manejo del borde superior al hacer clic (permite mover y redimensionar)
         private void pnlSuperior_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button != MouseButtons.Left)
+            if(e.Button != MouseButtons.Left)
                 return;
 
             ReleaseCapture();
@@ -268,12 +279,12 @@ namespace VisorPDF
             pnlSuperior.Cursor = cursorRedimension;
 
             // Esquina superior izquierda
-            if (e.X <= MARGEN_ESQUINA)
+            if(e.X <= MARGEN_ESQUINA)
             {
                 SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTTOPLEFT, 0);
             }
             // Esquina superior derecha
-            else if (e.X >= pnlSuperior.Width - MARGEN_ESQUINA)
+            else if(e.X >= pnlSuperior.Width - MARGEN_ESQUINA)
             {
                 SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTTOPRIGHT, 0);
             }
@@ -297,14 +308,14 @@ namespace VisorPDF
         private void pnlSuperior_MouseMove(object sender, MouseEventArgs e)
         {
             // Esquina superior izquierda
-            if (e.X <= MARGEN_ESQUINA)
+            if(e.X <= MARGEN_ESQUINA)
             {
                 cursorRedimension = Cursors.SizeNWSE;
             }
             // Esquina superior derecha
-            else if (e.X >= pnlSuperior.Width - MARGEN_ESQUINA)
+            else if(e.X >= pnlSuperior.Width - MARGEN_ESQUINA)
             {
-                cursorRedimension= Cursors.SizeNESW;
+                cursorRedimension = Cursors.SizeNESW;
             }
             // Borde superior
             else
@@ -319,9 +330,9 @@ namespace VisorPDF
         // Manejo del borde superior al salir del área (restaura el cursor)
         private void pnlSuperior_MouseLeave(object sender, EventArgs e)
         {
-            if (!redimensionando)
+            if(!redimensionando)
             {
-               pnlSuperior.Cursor = Cursors.Default;
+                pnlSuperior.Cursor = Cursors.Default;
             }
 
         }
@@ -332,7 +343,7 @@ namespace VisorPDF
         #region Redimensionamiento de borde inferior
         private void pnlInferior_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button != MouseButtons.Left)
+            if(e.Button != MouseButtons.Left)
                 return;
 
             ReleaseCapture();
@@ -340,12 +351,12 @@ namespace VisorPDF
             pnlInferior.Cursor = cursorRedimension;
 
             // Esquina inferior izquierda
-            if (e.X <= MARGEN_ESQUINA)
+            if(e.X <= MARGEN_ESQUINA)
             {
                 SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTBOTTOMLEFT, 0);
             }
             // Esquina inferior derecha
-            else if (e.X >= pnlInferior.Width - MARGEN_ESQUINA)
+            else if(e.X >= pnlInferior.Width - MARGEN_ESQUINA)
             {
                 SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTBOTTOMRIGHT, 0);
             }
@@ -368,12 +379,12 @@ namespace VisorPDF
         private void pnlInferior_MouseMove(object sender, MouseEventArgs e)
         {
             // Esquina inferior izquierda
-            if (e.X <= MARGEN_ESQUINA)
+            if(e.X <= MARGEN_ESQUINA)
             {
                 cursorRedimension = Cursors.SizeNESW;
             }
             // Esquina inferior derecha
-            else if (e.X >= pnlInferior.Width - MARGEN_ESQUINA)
+            else if(e.X >= pnlInferior.Width - MARGEN_ESQUINA)
             {
                 cursorRedimension = Cursors.SizeNWSE;
             }
@@ -390,7 +401,7 @@ namespace VisorPDF
         // Manejo del borde inferior al salir del área (restaura el cursor)
         private void pnlInferior_MouseLeave(object sender, EventArgs e)
         {
-            if (!redimensionando)
+            if(!redimensionando)
             {
                 pnlInferior.Cursor = Cursors.Default;
             }
@@ -399,5 +410,74 @@ namespace VisorPDF
 
 
         #endregion
+
+        private void btnAumentar_Click(object sender, EventArgs e)
+        {
+            zoomActual += 10;
+            ActualizarZoom();
+        }
+
+        private void btnDisminuir_Click(object sender, EventArgs e)
+        {
+            zoomActual -= 10;
+            ActualizarZoom();
+        }
+
+        private void ActualizarZoom()
+        {
+            txtZoom.Text = $"{zoomActual} %";
+        }
+
+        private void txtZoom_Validated(object sender, EventArgs e)
+        {
+            zoomActual = Math.Max(10, Math.Min(500, int.TryParse(txtZoom.Text.Replace("%", ""), out int valor) ? valor : 100));
+            ActualizarZoom();
+        }
+
+        private void chkFijar_CheckedChanged(object sender, EventArgs e)
+        {
+            this.TopMost = !this.TopMost;
+        }
+
+        private void archivoAbrirItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog
+            {
+                Filter = "Archivos PDF (*.pdf)|*.pdf|Todos los archivos (*.*)|*.*",
+                Title = "Abrir archivo PDF",
+                Multiselect = false
+            };
+
+            if(ofd.ShowDialog() == DialogResult.OK)
+            {
+                rutaArchivoPDF = ofd.FileName;
+                // Aquí cargarías el PDF en el visor
+            }
+        }
+
+        private void archivoCerrarItem_Click(object sender, EventArgs e)
+        {
+            rutaArchivoPDF = string.Empty;
+            // Aquí cerrarías el PDF en el visor
+        }
+
+        private void archivoGuardarComoItem_Click(object sender, EventArgs e)
+        {
+            if(string.IsNullOrEmpty(rutaArchivoPDF))
+                return;
+
+            SaveFileDialog sfd = new SaveFileDialog
+            {
+                Filter = "Archivos PDF (*.pdf)|*.pdf|Todos los archivos (*.*)|*.*",
+                Title = "Guardar archivo PDF como",
+                FileName = Path.GetFileName(rutaArchivoPDF)
+            };
+
+            if(sfd.ShowDialog() == DialogResult.OK)
+            {
+                File.Copy(rutaArchivoPDF, sfd.FileName, true);
+            }
+
+        }
     }
 }
