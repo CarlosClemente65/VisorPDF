@@ -31,7 +31,6 @@
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmVisorPDF));
             pnlTitulo = new Panel();
-            chkFijar = new CheckBox();
             label1 = new Label();
             btnMaximizar = new Button();
             ctrlVentana = new ImageList(components);
@@ -56,16 +55,25 @@
             archivoAbrirItem = new ToolStripMenuItem();
             archivoCerrarItem = new ToolStripMenuItem();
             archivoGuardarComoItem = new ToolStripMenuItem();
+            envioItem = new ToolStripMenuItem();
+            enviarImprimirItem = new ToolStripMenuItem();
+            enviarEmailItem = new ToolStripMenuItem();
+            configuracionItem = new ToolStripMenuItem();
+            configuracionFijarVentanaItem = new ToolStripMenuItem();
+            configuracionRutaCompletaItem = new ToolStripMenuItem();
             AarchivoGuardarComoItem = new ToolStripMenuItem();
+            pnlMensajes = new Panel();
+            lbArchivo = new Label();
+            lbEstadoVentana = new Label();
             pnlTitulo.SuspendLayout();
             pnlHerramientas.SuspendLayout();
             menuStrip.SuspendLayout();
+            pnlMensajes.SuspendLayout();
             SuspendLayout();
             // 
             // pnlTitulo
             // 
             pnlTitulo.BackColor = Color.Silver;
-            pnlTitulo.Controls.Add(chkFijar);
             pnlTitulo.Controls.Add(label1);
             pnlTitulo.Controls.Add(btnMaximizar);
             pnlTitulo.Controls.Add(btnMinimizar);
@@ -76,21 +84,6 @@
             pnlTitulo.Size = new Size(492, 40);
             pnlTitulo.TabIndex = 0;
             pnlTitulo.MouseDown += pnlTitulo_MouseDown;
-            // 
-            // chkFijar
-            // 
-            chkFijar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            chkFijar.AutoSize = true;
-            chkFijar.Checked = true;
-            chkFijar.CheckState = CheckState.Checked;
-            chkFijar.Location = new Point(260, 12);
-            chkFijar.Name = "chkFijar";
-            chkFijar.Size = new Size(99, 19);
-            chkFijar.TabIndex = 20;
-            chkFijar.Text = "Fijar ventana";
-            chkFijar.TextAlign = ContentAlignment.MiddleCenter;
-            chkFijar.UseVisualStyleBackColor = true;
-            chkFijar.CheckedChanged += chkFijar_CheckedChanged;
             // 
             // label1
             // 
@@ -158,7 +151,7 @@
             // 
             // pnlSuperior
             // 
-            pnlSuperior.BackColor = SystemColors.ScrollBar;
+            pnlSuperior.BackColor = Color.DarkGray;
             pnlSuperior.Cursor = Cursors.SizeNS;
             pnlSuperior.Dock = DockStyle.Top;
             pnlSuperior.Location = new Point(4, 0);
@@ -184,7 +177,7 @@
             pnlHerramientas.ForeColor = Color.Black;
             pnlHerramientas.Location = new Point(4, 70);
             pnlHerramientas.Name = "pnlHerramientas";
-            pnlHerramientas.Size = new Size(492, 40);
+            pnlHerramientas.Size = new Size(492, 30);
             pnlHerramientas.TabIndex = 1;
             // 
             // txtZoom
@@ -192,11 +185,11 @@
             txtZoom.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             txtZoom.BackColor = Color.White;
             txtZoom.BorderStyle = BorderStyle.None;
-            txtZoom.Font = new Font("Calibri", 12F);
+            txtZoom.Font = new Font("Calibri", 11F);
             txtZoom.ForeColor = Color.Black;
-            txtZoom.Location = new Point(390, 10);
+            txtZoom.Location = new Point(390, 6);
             txtZoom.Name = "txtZoom";
-            txtZoom.Size = new Size(50, 20);
+            txtZoom.Size = new Size(50, 18);
             txtZoom.TabIndex = 7;
             txtZoom.TextAlign = HorizontalAlignment.Center;
             txtZoom.Validated += txtZoom_Validated;
@@ -209,9 +202,10 @@
             btnDisminuir.FlatStyle = FlatStyle.Flat;
             btnDisminuir.ImageIndex = 5;
             btnDisminuir.ImageList = ctrlPDF;
-            btnDisminuir.Location = new Point(450, 4);
+            btnDisminuir.Location = new Point(450, 2);
+            btnDisminuir.Margin = new Padding(0);
             btnDisminuir.Name = "btnDisminuir";
-            btnDisminuir.Size = new Size(30, 30);
+            btnDisminuir.Size = new Size(25, 25);
             btnDisminuir.TabIndex = 8;
             btnDisminuir.UseVisualStyleBackColor = false;
             btnDisminuir.Click += btnDisminuir_Click;
@@ -236,9 +230,10 @@
             btnAumentar.FlatStyle = FlatStyle.Flat;
             btnAumentar.ImageIndex = 4;
             btnAumentar.ImageList = ctrlPDF;
-            btnAumentar.Location = new Point(350, 4);
+            btnAumentar.Location = new Point(350, 2);
+            btnAumentar.Margin = new Padding(0);
             btnAumentar.Name = "btnAumentar";
-            btnAumentar.Size = new Size(30, 30);
+            btnAumentar.Size = new Size(25, 25);
             btnAumentar.TabIndex = 6;
             btnAumentar.UseVisualStyleBackColor = false;
             btnAumentar.Click += btnAumentar_Click;
@@ -250,9 +245,10 @@
             btnPrimero.FlatStyle = FlatStyle.Flat;
             btnPrimero.ImageIndex = 1;
             btnPrimero.ImageList = ctrlPDF;
-            btnPrimero.Location = new Point(10, 4);
+            btnPrimero.Location = new Point(10, 2);
+            btnPrimero.Margin = new Padding(0);
             btnPrimero.Name = "btnPrimero";
-            btnPrimero.Size = new Size(30, 30);
+            btnPrimero.Size = new Size(25, 25);
             btnPrimero.TabIndex = 2;
             btnPrimero.UseVisualStyleBackColor = false;
             // 
@@ -263,9 +259,10 @@
             btnRetroceso.FlatStyle = FlatStyle.Flat;
             btnRetroceso.ImageIndex = 2;
             btnRetroceso.ImageList = ctrlPDF;
-            btnRetroceso.Location = new Point(50, 4);
+            btnRetroceso.Location = new Point(40, 2);
+            btnRetroceso.Margin = new Padding(0);
             btnRetroceso.Name = "btnRetroceso";
-            btnRetroceso.Size = new Size(30, 30);
+            btnRetroceso.Size = new Size(25, 25);
             btnRetroceso.TabIndex = 3;
             btnRetroceso.UseVisualStyleBackColor = false;
             // 
@@ -276,9 +273,10 @@
             btnAvance.FlatStyle = FlatStyle.Flat;
             btnAvance.ImageIndex = 0;
             btnAvance.ImageList = ctrlPDF;
-            btnAvance.Location = new Point(90, 4);
+            btnAvance.Location = new Point(70, 2);
+            btnAvance.Margin = new Padding(0);
             btnAvance.Name = "btnAvance";
-            btnAvance.Size = new Size(30, 30);
+            btnAvance.Size = new Size(25, 25);
             btnAvance.TabIndex = 4;
             btnAvance.UseVisualStyleBackColor = false;
             // 
@@ -289,24 +287,28 @@
             btnUltimo.FlatStyle = FlatStyle.Flat;
             btnUltimo.ImageIndex = 3;
             btnUltimo.ImageList = ctrlPDF;
-            btnUltimo.Location = new Point(130, 4);
+            btnUltimo.Location = new Point(100, 2);
+            btnUltimo.Margin = new Padding(0);
             btnUltimo.Name = "btnUltimo";
-            btnUltimo.Size = new Size(30, 30);
+            btnUltimo.Size = new Size(25, 25);
             btnUltimo.TabIndex = 5;
             btnUltimo.UseVisualStyleBackColor = false;
             // 
             // pnlVisor
             // 
+            pnlVisor.AllowDrop = true;
             pnlVisor.BackColor = Color.WhiteSmoke;
-            pnlVisor.Dock = DockStyle.Top;
-            pnlVisor.Location = new Point(4, 110);
+            pnlVisor.Dock = DockStyle.Fill;
+            pnlVisor.Location = new Point(4, 100);
             pnlVisor.Name = "pnlVisor";
-            pnlVisor.Size = new Size(492, 412);
+            pnlVisor.Size = new Size(492, 476);
             pnlVisor.TabIndex = 1;
+            pnlVisor.DragDrop += pnlVisor_DragDrop;
+            pnlVisor.DragEnter += pnlVisor_DragEnter;
             // 
             // pnlIzquierdo
             // 
-            pnlIzquierdo.BackColor = SystemColors.ScrollBar;
+            pnlIzquierdo.BackColor = Color.DarkGray;
             pnlIzquierdo.Cursor = Cursors.SizeWE;
             pnlIzquierdo.Dock = DockStyle.Left;
             pnlIzquierdo.Location = new Point(0, 0);
@@ -320,7 +322,7 @@
             // 
             // pnlDerecho
             // 
-            pnlDerecho.BackColor = SystemColors.ScrollBar;
+            pnlDerecho.BackColor = Color.DarkGray;
             pnlDerecho.Cursor = Cursors.SizeWE;
             pnlDerecho.Dock = DockStyle.Right;
             pnlDerecho.Location = new Point(496, 0);
@@ -334,7 +336,7 @@
             // 
             // pnlInferior
             // 
-            pnlInferior.BackColor = SystemColors.ScrollBar;
+            pnlInferior.BackColor = Color.DarkGray;
             pnlInferior.Cursor = Cursors.SizeNS;
             pnlInferior.Dock = DockStyle.Bottom;
             pnlInferior.Location = new Point(4, 596);
@@ -348,9 +350,10 @@
             // 
             // menuStrip
             // 
+            menuStrip.AccessibleRole = AccessibleRole.Grip;
             menuStrip.BackColor = Color.Gainsboro;
             menuStrip.Font = new Font("Calibri", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            menuStrip.Items.AddRange(new ToolStripItem[] { archivoItem });
+            menuStrip.Items.AddRange(new ToolStripItem[] { archivoItem, envioItem, configuracionItem });
             menuStrip.Location = new Point(4, 44);
             menuStrip.Name = "menuStrip";
             menuStrip.RenderMode = ToolStripRenderMode.Professional;
@@ -369,28 +372,117 @@
             // archivoAbrirItem
             // 
             archivoAbrirItem.Name = "archivoAbrirItem";
-            archivoAbrirItem.Size = new Size(180, 22);
+            archivoAbrirItem.Size = new Size(174, 22);
             archivoAbrirItem.Text = "Abrir...";
             archivoAbrirItem.Click += archivoAbrirItem_Click;
             // 
             // archivoCerrarItem
             // 
+            archivoCerrarItem.Enabled = false;
             archivoCerrarItem.Name = "archivoCerrarItem";
-            archivoCerrarItem.Size = new Size(180, 22);
+            archivoCerrarItem.Size = new Size(174, 22);
             archivoCerrarItem.Text = "Cerrar";
             archivoCerrarItem.Click += archivoCerrarItem_Click;
             // 
             // archivoGuardarComoItem
             // 
+            archivoGuardarComoItem.Enabled = false;
             archivoGuardarComoItem.Name = "archivoGuardarComoItem";
-            archivoGuardarComoItem.Size = new Size(180, 22);
+            archivoGuardarComoItem.Size = new Size(174, 22);
             archivoGuardarComoItem.Text = "Guardar como...";
             archivoGuardarComoItem.Click += archivoGuardarComoItem_Click;
+            // 
+            // envioItem
+            // 
+            envioItem.DropDownItems.AddRange(new ToolStripItem[] { enviarImprimirItem, enviarEmailItem });
+            envioItem.Name = "envioItem";
+            envioItem.Size = new Size(58, 22);
+            envioItem.Text = "Enviar";
+            // 
+            // enviarImprimirItem
+            // 
+            enviarImprimirItem.Name = "enviarImprimirItem";
+            enviarImprimirItem.Size = new Size(152, 22);
+            enviarImprimirItem.Text = "Imprimir";
+            enviarImprimirItem.Click += enviarImprimirItem_Click;
+            // 
+            // enviarEmailItem
+            // 
+            enviarEmailItem.Name = "enviarEmailItem";
+            enviarEmailItem.Size = new Size(152, 22);
+            enviarEmailItem.Text = "Enviar email";
+            enviarEmailItem.Click += enviarEmailItem_Click;
+            // 
+            // configuracionItem
+            // 
+            configuracionItem.DropDownItems.AddRange(new ToolStripItem[] { configuracionFijarVentanaItem, configuracionRutaCompletaItem });
+            configuracionItem.Name = "configuracionItem";
+            configuracionItem.Size = new Size(105, 22);
+            configuracionItem.Text = "Configuracion";
+            // 
+            // configuracionFijarVentanaItem
+            // 
+            configuracionFijarVentanaItem.BackColor = SystemColors.ControlDark;
+            configuracionFijarVentanaItem.Checked = true;
+            configuracionFijarVentanaItem.CheckOnClick = true;
+            configuracionFijarVentanaItem.CheckState = CheckState.Checked;
+            configuracionFijarVentanaItem.DoubleClickEnabled = true;
+            configuracionFijarVentanaItem.Name = "configuracionFijarVentanaItem";
+            configuracionFijarVentanaItem.Size = new Size(213, 22);
+            configuracionFijarVentanaItem.Text = "Fijar ventana";
+            configuracionFijarVentanaItem.Click += fijarConfiguracionItem_Click;
+            // 
+            // configuracionRutaCompletaItem
+            // 
+            configuracionRutaCompletaItem.Checked = true;
+            configuracionRutaCompletaItem.CheckOnClick = true;
+            configuracionRutaCompletaItem.CheckState = CheckState.Checked;
+            configuracionRutaCompletaItem.Name = "configuracionRutaCompletaItem";
+            configuracionRutaCompletaItem.Size = new Size(213, 22);
+            configuracionRutaCompletaItem.Text = "Ruta archivo completa";
+            configuracionRutaCompletaItem.Click += configuracionRutaCompletaItem_Click;
             // 
             // AarchivoGuardarComoItem
             // 
             AarchivoGuardarComoItem.Name = "AarchivoGuardarComoItem";
             AarchivoGuardarComoItem.Size = new Size(32, 19);
+            // 
+            // pnlMensajes
+            // 
+            pnlMensajes.BackColor = Color.FromArgb(230, 230, 230);
+            pnlMensajes.Controls.Add(lbArchivo);
+            pnlMensajes.Controls.Add(lbEstadoVentana);
+            pnlMensajes.Dock = DockStyle.Bottom;
+            pnlMensajes.Location = new Point(4, 576);
+            pnlMensajes.Name = "pnlMensajes";
+            pnlMensajes.Size = new Size(492, 20);
+            pnlMensajes.TabIndex = 3;
+            // 
+            // lbArchivo
+            // 
+            lbArchivo.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            lbArchivo.AutoEllipsis = true;
+            lbArchivo.Font = new Font("Calibri", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lbArchivo.Location = new Point(0, 0);
+            lbArchivo.Margin = new Padding(0);
+            lbArchivo.Name = "lbArchivo";
+            lbArchivo.Padding = new Padding(10, 3, 0, 3);
+            lbArchivo.Size = new Size(380, 20);
+            lbArchivo.TabIndex = 26;
+            lbArchivo.Text = " ";
+            lbArchivo.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // lbEstadoVentana
+            // 
+            lbEstadoVentana.Dock = DockStyle.Right;
+            lbEstadoVentana.Font = new Font("Calibri", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lbEstadoVentana.Location = new Point(381, 0);
+            lbEstadoVentana.Name = "lbEstadoVentana";
+            lbEstadoVentana.Padding = new Padding(0, 0, 10, 0);
+            lbEstadoVentana.Size = new Size(111, 20);
+            lbEstadoVentana.TabIndex = 25;
+            lbEstadoVentana.Text = "Ventana fijada";
+            lbEstadoVentana.TextAlign = ContentAlignment.MiddleRight;
             // 
             // frmVisorPDF
             // 
@@ -398,12 +490,13 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(500, 600);
-            Controls.Add(pnlInferior);
             Controls.Add(pnlVisor);
             Controls.Add(pnlHerramientas);
             Controls.Add(menuStrip);
             Controls.Add(pnlTitulo);
             Controls.Add(pnlSuperior);
+            Controls.Add(pnlMensajes);
+            Controls.Add(pnlInferior);
             Controls.Add(pnlIzquierdo);
             Controls.Add(pnlDerecho);
             DoubleBuffered = true;
@@ -420,6 +513,7 @@
             pnlHerramientas.PerformLayout();
             menuStrip.ResumeLayout(false);
             menuStrip.PerformLayout();
+            pnlMensajes.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -449,7 +543,6 @@
         private Button btnAumentar;
         private Button btnDisminuir;
         private TextBox txtZoom;
-        private CheckBox chkFijar;
         private MenuStrip menuStrip;
         private ToolStripMenuItem archivoItem;
         private ToolStripMenuItem abrirToolStripMenuItem;
@@ -458,5 +551,14 @@
         private ToolStripMenuItem archivoAbrirItem;
         private ToolStripMenuItem archivoCerrarItem;
         private ToolStripMenuItem AarchivoGuardarComoItem;
+        private ToolStripMenuItem configuracionItem;
+        private ToolStripMenuItem configuracionFijarVentanaItem;
+        private Panel pnlMensajes;
+        private Label lbEstadoVentana;
+        private Label lbArchivo;
+        private ToolStripMenuItem configuracionRutaCompletaItem;
+        private ToolStripMenuItem envioItem;
+        private ToolStripMenuItem enviarImprimirItem;
+        private ToolStripMenuItem enviarEmailItem;
     }
 }

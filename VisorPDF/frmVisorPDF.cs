@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Net.Mail;
 using System.Runtime.InteropServices;
 
 
@@ -39,12 +41,19 @@ namespace VisorPDF
 
 
         // Variables para gestionar el archivo PDF
-        private string rutaArchivoPDF = string.Empty;
+        public static string rutaArchivoPDF = string.Empty;
+        public static bool rutaArchivoCompleta = true;
 
         public frmVisorPDF()
         {
             InitializeComponent();
+
+            // Fijamos la ventana como siempre encima (opcional)
             this.TopMost = true;
+            EstadoVentana();
+            CargarArchivo();
+
+
 
             // Creamos un ToolTip (si no lo añadiste desde el diseñador)
             ToolTip toolTip1 = new ToolTip();
@@ -88,12 +97,6 @@ namespace VisorPDF
         private void btnCerrar_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void btnFijar_Click(object sender, EventArgs e)
-        {
-            //this.TopMost = !this.TopMost;
-            //this.btnFijar.Image = this.TopMost ? Properties.Resources.Activo : Properties.Resources.Inactivo;
         }
 
 
@@ -411,6 +414,8 @@ namespace VisorPDF
 
         #endregion
 
+
+        #region Control de Zoom
         private void btnAumentar_Click(object sender, EventArgs e)
         {
             zoomActual += 10;
@@ -434,33 +439,55 @@ namespace VisorPDF
             ActualizarZoom();
         }
 
-        private void chkFijar_CheckedChanged(object sender, EventArgs e)
+        #endregion
+
+
+        // Carga el archivo PDF en el visor y actualiza la interfaz
+        private void CargarArchivo()
         {
-            this.TopMost = !this.TopMost;
+            // Obtenemos el nombre del archivo según la configuración
+            var archivo = string.Empty;
+            if(!string.IsNullOrEmpty(rutaArchivoPDF))
+            {
+                archivo = rutaArchivoCompleta ? Path.GetFullPath(rutaArchivoPDF) : Path.GetFileName(rutaArchivoPDF);
+            }
+
+            // Mostramos el nombre del archivo en la interfaz
+            lbArchivo.Text = $"Archivo: {archivo}";
+
+            // Habilitamos o deshabilitamos las opciones del menú según si hay un archivo cargado
+            bool activarOpciones = !string.IsNullOrEmpty(rutaArchivoPDF) ? true : false;
+            archivoCerrarItem.Enabled = activarOpciones;
+            archivoGuardarComoItem.Enabled = activarOpciones;
+            enviarEmailItem.Enabled = activarOpciones;
+            enviarImprimirItem.Enabled = activarOpciones;
+
+            // TODO: Pendiente de implementar la carga del archivo PDF en el visor
         }
 
+
+        // Opción de abrir archivo PDF
         private void archivoAbrirItem_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog
-            {
-                Filter = "Archivos PDF (*.pdf)|*.pdf|Todos los archivos (*.*)|*.*",
-                Title = "Abrir archivo PDF",
-                Multiselect = false
-            };
+            // Lógica para abrir el archivo PDF
+            GestionArchivos.AbrirArchivo(rutaArchivoPDF);
 
-            if(ofd.ShowDialog() == DialogResult.OK)
-            {
-                rutaArchivoPDF = ofd.FileName;
-                // Aquí cargarías el PDF en el visor
-            }
+            // Actualizar el nombre del archivo en la interfaz
+            CargarArchivo();
         }
 
+
+        // Opción de cerrar archivo PDF
         private void archivoCerrarItem_Click(object sender, EventArgs e)
         {
             rutaArchivoPDF = string.Empty;
-            // Aquí cerrarías el PDF en el visor
+            CargarArchivo();
+
+            // TODO: Pendiente de implementar el cierre del archivo PDF en el visor
         }
 
+
+        // Opción de guardar como archivo PDF
         private void archivoGuardarComoItem_Click(object sender, EventArgs e)
         {
             if(string.IsNullOrEmpty(rutaArchivoPDF))
@@ -478,6 +505,96 @@ namespace VisorPDF
                 File.Copy(rutaArchivoPDF, sfd.FileName, true);
             }
 
+        }
+
+
+        // Alterna entre fijar la ventana o dejarla flotante desde el menu Configuracion
+        private void fijarConfiguracionItem_Click(object sender, EventArgs e)
+        {
+            this.TopMost = !this.TopMost;
+            EstadoVentana();
+        }
+
+
+        // Muestra en la interfaz el estado de la ventana (fijada o flotante)
+        private void EstadoVentana()
+        {
+            lbEstadoVentana.Text = this.TopMost ? "Ventana fijada" : "Ventana flotante";
+        }
+
+
+        // Alterna entre mostrar la ruta completa o solo el nombre del archivo desde el menu de Configuracion
+        private void configuracionRutaCompletaItem_Click(object sender, EventArgs e)
+        {
+            rutaArchivoCompleta = !rutaArchivoCompleta;
+            CargarArchivo();
+        }
+
+
+        // Opcion de impresion del archivo PDF
+        private void enviarImprimirItem_Click(object sender, EventArgs e)
+        {
+            // TODO : Implementar la impresión del archivo PDF
+
+            MessageBox.Show("Funcionalidad de impresión no implementada.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+
+        // Opcion de envio por email del archivo PDF
+        private void enviarEmailItem_Click(object sender, EventArgs e)
+        {
+            // TODO : Implementar el envío de correo con el archivo PDF adjunto
+            //if(string.IsNullOrEmpty(rutaArchivoPDF))
+            //    return;
+
+            //if (!File.Exists(rutaArchivoPDF))
+            //    return;
+
+            //string asunto = Uri.EscapeDataString("Envio documento PDF");
+            //string cuerpo = Uri.EscapeDataString("Adjunto el archivo PDF.");
+            //string mailto = $"mailto:?subject={asunto}&body={cuerpo}&attachment=\"{rutaArchivoPDF}\"";
+
+            //ProcessStartInfo psi = new ProcessStartInfo
+            //{
+            //    FileName = mailto,
+            //    UseShellExecute = true
+            //};
+
+            //Process.Start(psi);
+
+            MessageBox.Show("Funcionalidad de envío de correo no implementada.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+
+        // Gestiona el arrastre de archivos PDF al panel del visor
+        private void pnlVisor_DragEnter(object sender, DragEventArgs e)
+        {
+            if(e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] archivos = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                if(archivos.Length > 0 && Path.GetExtension(archivos[0]).ToLower() == ".pdf")
+                {
+                    e.Effect = DragDropEffects.Copy;
+                }
+                else
+                {
+                    e.Effect = DragDropEffects.None;
+                }
+            }
+        }
+
+
+        // Gestiona al soltar archivos PDF en el panel del visor
+        private void pnlVisor_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] archivos = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+            if(archivos.Length > 0 && Path.GetExtension(archivos[0]).ToLower() == ".pdf")
+            {
+                rutaArchivoPDF = archivos[0];
+                CargarArchivo();
+            }
         }
     }
 }
