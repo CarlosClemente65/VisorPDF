@@ -1,9 +1,9 @@
 using System;
 using System.Reflection;
 
-[assembly: AssemblyVersion("0.3.1.0")]
-[assembly: AssemblyFileVersion("0.3.1.0")]
-[assembly: AssemblyInformationalVersion("0.3.1.0")]
+[assembly: AssemblyVersion("0.3.2.0")]
+[assembly: AssemblyFileVersion("0.3.2.0")]
+[assembly: AssemblyInformationalVersion("0.3.2.0")]
 
 // Información del producto
 [assembly: AssemblyProduct("Visor PDF")]
@@ -22,9 +22,11 @@ namespace VisorPDF
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
+
+            // Cargamos la configuracion de la aplicación
+            Configuracion.CargarConfiguracion();
+
             Application.Run(new frmVisorPDF());
         }
     }

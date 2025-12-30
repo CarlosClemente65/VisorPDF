@@ -63,6 +63,36 @@ namespace VisorPDF.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Ajuste_alto {
+            get {
+                object obj = ResourceManager.GetObject("Ajuste_alto", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Ajuste_ancho {
+            get {
+                object obj = ResourceManager.GetObject("Ajuste_ancho", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Ajuste_pagina {
+            get {
+                object obj = ResourceManager.GetObject("Ajuste_pagina", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Aumentar {
             get {
                 object obj = ResourceManager.GetObject("Aumentar", resourceCulture);

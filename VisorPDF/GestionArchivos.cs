@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using visor = VisorPDF.frmVisorPDF;
 
 namespace VisorPDF
 {
@@ -22,7 +21,7 @@ namespace VisorPDF
 
             if(ofd.ShowDialog() == DialogResult.OK)
             {
-                visor.rutaArchivoPDF = ofd.FileName;
+                VisorPDF.frmVisorPDF.rutaArchivoPDF = ofd.FileName;
             }
         }
 

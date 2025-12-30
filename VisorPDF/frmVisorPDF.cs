@@ -1,3 +1,4 @@
+using System.Configuration;
 using System.Diagnostics;
 using System.Net.Mail;
 using System.Runtime.InteropServices;
@@ -32,49 +33,68 @@ namespace VisorPDF
         private const int HTBOTTOMRIGHT = 17;
 
         // Variables para controlar el cursor en los bordes
-        const int MARGEN_ESQUINA = 10;
+        private const int MARGEN_ESQUINA = 10;
         private Cursor cursorRedimension;
-        private bool redimensionando = false;
+        private bool redimensionandoVentana = false;
+        private bool moviendoVentana = false;
 
         // Variables para controlar el zoom
-        private int zoomActual = 100;
+        private int zoomActual = Configuracion.ParametrosVisor.NivelZoom;
 
 
         // Variables para gestionar el archivo PDF
         public static string rutaArchivoPDF = string.Empty;
-        public static bool rutaArchivoCompleta = true;
+        public static string nombreArchivoVisor = string.Empty;
+        public static bool rutaArchivoCompleta = Configuracion.ParametrosGenerales.RutaPDFCompleta;
+        public static int paginaActual = 1;
+        public static int totalPaginas = 100;
 
         public frmVisorPDF()
         {
             InitializeComponent();
 
+            // Posicionamos la ventana según la configuración
+            this.StartPosition = Configuracion.ParametrosVisor.PosicionFormulario;
+            this.Location = new Point(Configuracion.ParametrosVisor.PosicionX, Configuracion.ParametrosVisor.PosicionY);
+            this.Size = new Size(Configuracion.ParametrosVisor.Ancho, Configuracion.ParametrosVisor.Alto);
+
             // Fijamos la ventana como siempre encima (opcional)
-            this.TopMost = true;
+            this.TopMost = Configuracion.ParametrosGenerales.FijarVentana;
+
+            // Muestra en la interfaz el estado de la ventana (fijada o flotante)
             EstadoVentana();
-            CargarArchivo();
 
-
-
-            // Creamos un ToolTip (si no lo añadiste desde el diseñador)
-            ToolTip toolTip1 = new ToolTip();
-
-            // Opcional: configuraciones generales del tooltip
-            toolTip1.AutoPopDelay = 3000;   // tiempo que se muestra
-            toolTip1.InitialDelay = 200;    // tiempo antes de aparecer
-            toolTip1.ReshowDelay = 100;     // tiempo entre reapariciones
-            toolTip1.ShowAlways = true;     // se muestra aunque el formulario no esté activo
-
-            // Asignamos el texto de ayuda a cada botón
-            toolTip1.SetToolTip(btnPrimero, "Primera página");
-            toolTip1.SetToolTip(btnUltimo, "Ultima página");
-            toolTip1.SetToolTip(btnAvance, "Página siguiente");
-            toolTip1.SetToolTip(btnRetroceso, "Página anterior");
-            toolTip1.SetToolTip(btnAumentar, "Aumentar zoom");
-            toolTip1.SetToolTip(btnDisminuir, "Disminuir zoom");
-            toolTip1.SetToolTip(txtZoom, "Establecer zoom (10% - 500%)");
+            // Cargamos los valores del zoom en el comboBox
+            cbxZoom.Items.Clear();
+            cbxZoom.DataSource = Configuracion.ValoresZoom;
 
             // Mostramos el zoom inicial
             ActualizarZoom();
+
+            // Fijamos el foco en el panel del visor
+            pnlVisor.Focus();
+
+            // Creamos un ToolTip para mostrar ayudas sobre los controles
+            ToolTip mensajesAyuda = new ToolTip();
+
+            // Opcional: configuraciones generales del tooltip
+            mensajesAyuda.AutoPopDelay = 3000;   // tiempo que se muestra
+            mensajesAyuda.InitialDelay = 200;    // tiempo antes de aparecer
+            mensajesAyuda.ReshowDelay = 100;     // tiempo entre reapariciones
+            mensajesAyuda.ShowAlways = true;     // se muestra aunque el formulario no esté activo
+
+            // Asignamos el texto de ayuda a cada botón
+            mensajesAyuda.SetToolTip(btnPrimero, "Primera página");
+            mensajesAyuda.SetToolTip(btnUltimo, "Ultima página");
+            mensajesAyuda.SetToolTip(btnAvance, "Página siguiente");
+            mensajesAyuda.SetToolTip(btnRetroceso, "Página anterior");
+            mensajesAyuda.SetToolTip(btnAumentar, "Aumentar zoom");
+            mensajesAyuda.SetToolTip(btnDisminuir, "Disminuir zoom");
+            mensajesAyuda.SetToolTip(cbxZoom, "Establecer zoom (10% - 500%)");
+            mensajesAyuda.SetToolTip(btnAjusteAlto, "Ajuste alto");
+            mensajesAyuda.SetToolTip(btnAjusteAncho, "Ajuste ancho");
+            mensajesAyuda.SetToolTip(btnAjustePagina, "Ajuste página");
+
         }
 
         private void btnMinimizar_Click(object sender, EventArgs e)
@@ -122,8 +142,14 @@ namespace VisorPDF
             }
 
             // Clic normal para mover la ventana
+            moviendoVentana = true;
             ReleaseCapture();
             SendMessage(this.Handle, WM_NCLBUTTONDOWN, (IntPtr)HTCAPTION, IntPtr.Zero);
+        }
+
+        private void pnlTitulo_MouseUp(object sender, MouseEventArgs e)
+        {
+            moviendoVentana = false;
         }
 
 
@@ -134,7 +160,7 @@ namespace VisorPDF
                 return;
 
             ReleaseCapture();
-            redimensionando = true;
+            redimensionandoVentana = true;
             pnlDerecho.Cursor = cursorRedimension;
 
             // Esquina superior derecha
@@ -157,7 +183,7 @@ namespace VisorPDF
         // Manejo del borde derecho al soltar el raton
         private void pnlDerecho_MouseUp(object sender, MouseEventArgs e)
         {
-            redimensionando = false;
+            redimensionandoVentana = false;
             pnlDerecho.Cursor = Cursors.Default;
         }
 
@@ -188,7 +214,7 @@ namespace VisorPDF
         // Manejo del borde derecho al salir del área (restaura el cursor)
         private void pnlDerecho_MouseLeave(object sender, EventArgs e)
         {
-            if(!redimensionando)
+            if(!redimensionandoVentana)
             {
                 pnlDerecho.Cursor = Cursors.Default;
             }
@@ -205,7 +231,7 @@ namespace VisorPDF
                 return;
 
             ReleaseCapture();
-            redimensionando = true;
+            redimensionandoVentana = true;
             pnlIzquierdo.Cursor = cursorRedimension;
 
             // Esquina superior izquierda
@@ -228,7 +254,7 @@ namespace VisorPDF
         // Manejo del borde izquierdo al soltar el raton
         private void pnlIzquierdo_MouseUp(object sender, MouseEventArgs e)
         {
-            redimensionando = false;
+            redimensionandoVentana = false;
             pnlIzquierdo.Cursor = Cursors.Default;
         }
 
@@ -259,7 +285,7 @@ namespace VisorPDF
         // Manejo del borde izquierdo al salir del área (restaura el cursor)
         private void pnlIzquierdo_MouseLeave(object sender, EventArgs e)
         {
-            if(!redimensionando)
+            if(!redimensionandoVentana)
             {
                 pnlIzquierdo.Cursor = Cursors.Default;
             }
@@ -278,7 +304,7 @@ namespace VisorPDF
                 return;
 
             ReleaseCapture();
-            redimensionando = true;
+            redimensionandoVentana = true;
             pnlSuperior.Cursor = cursorRedimension;
 
             // Esquina superior izquierda
@@ -302,7 +328,7 @@ namespace VisorPDF
         // Manejo del borde superior al soltar el clic
         private void pnlSuperior_MouseUp(object sender, MouseEventArgs e)
         {
-            redimensionando = false;
+            redimensionandoVentana = false;
             pnlSuperior.Cursor = Cursors.Default;
         }
 
@@ -333,7 +359,7 @@ namespace VisorPDF
         // Manejo del borde superior al salir del área (restaura el cursor)
         private void pnlSuperior_MouseLeave(object sender, EventArgs e)
         {
-            if(!redimensionando)
+            if(!redimensionandoVentana)
             {
                 pnlSuperior.Cursor = Cursors.Default;
             }
@@ -350,7 +376,7 @@ namespace VisorPDF
                 return;
 
             ReleaseCapture();
-            redimensionando = true;
+            redimensionandoVentana = true;
             pnlInferior.Cursor = cursorRedimension;
 
             // Esquina inferior izquierda
@@ -373,7 +399,7 @@ namespace VisorPDF
         // Manejo del borde inferior al soltar el clic
         private void pnlInferior_MouseUp(object sender, MouseEventArgs e)
         {
-            redimensionando = false;
+            redimensionandoVentana = false;
             pnlInferior.Cursor = Cursors.Default;
         }
 
@@ -404,7 +430,7 @@ namespace VisorPDF
         // Manejo del borde inferior al salir del área (restaura el cursor)
         private void pnlInferior_MouseLeave(object sender, EventArgs e)
         {
-            if(!redimensionando)
+            if(!redimensionandoVentana)
             {
                 pnlInferior.Cursor = Cursors.Default;
             }
@@ -418,25 +444,35 @@ namespace VisorPDF
         #region Control de Zoom
         private void btnAumentar_Click(object sender, EventArgs e)
         {
-            zoomActual += 10;
+            if(zoomActual < 500)
+            {
+                zoomActual += 10;
+            }
             ActualizarZoom();
         }
 
         private void btnDisminuir_Click(object sender, EventArgs e)
         {
-            zoomActual -= 10;
+            if(zoomActual > 10)
+            {
+                zoomActual -= 10;
+            }
             ActualizarZoom();
+        }
+
+        private void cbxZoom_Validated(object sender, EventArgs e)
+        {
+            string textoZoom = cbxZoom.Text.Replace("%", "");
+            zoomActual = Math.Max(10, Math.Min(500, int.TryParse(textoZoom, out int valor) ? valor : 100));
+            ActualizarZoom();
+
+            cbxZoom.Text = $"{zoomActual} %";
         }
 
         private void ActualizarZoom()
         {
-            txtZoom.Text = $"{zoomActual} %";
-        }
-
-        private void txtZoom_Validated(object sender, EventArgs e)
-        {
-            zoomActual = Math.Max(10, Math.Min(500, int.TryParse(txtZoom.Text.Replace("%", ""), out int valor) ? valor : 100));
-            ActualizarZoom();
+            cbxZoom.Text = $"{zoomActual} %";
+            Configuracion.ParametrosVisor.NivelZoom = zoomActual;
         }
 
         #endregion
@@ -446,14 +482,21 @@ namespace VisorPDF
         private void CargarArchivo()
         {
             // Obtenemos el nombre del archivo según la configuración
-            var archivo = string.Empty;
             if(!string.IsNullOrEmpty(rutaArchivoPDF))
             {
-                archivo = rutaArchivoCompleta ? Path.GetFullPath(rutaArchivoPDF) : Path.GetFileName(rutaArchivoPDF);
+                nombreArchivoVisor = rutaArchivoCompleta ? Path.GetFullPath(rutaArchivoPDF) : Path.GetFileName(rutaArchivoPDF);
             }
 
+            ActualizaCamposVisor();
+
+            // TODO: Pendiente de implementar la carga del archivo PDF en el visor
+
+        }
+
+        private void ActualizaCamposVisor()
+        {
             // Mostramos el nombre del archivo en la interfaz
-            lbArchivo.Text = $"Archivo: {archivo}";
+            lbArchivo.Text = $"Archivo: {nombreArchivoVisor}";
 
             // Habilitamos o deshabilitamos las opciones del menú según si hay un archivo cargado
             bool activarOpciones = !string.IsNullOrEmpty(rutaArchivoPDF) ? true : false;
@@ -461,8 +504,13 @@ namespace VisorPDF
             archivoGuardarComoItem.Enabled = activarOpciones;
             enviarEmailItem.Enabled = activarOpciones;
             enviarImprimirItem.Enabled = activarOpciones;
+            txtNumeroPagina.Enabled = activarOpciones;
 
-            // TODO: Pendiente de implementar la carga del archivo PDF en el visor
+            // Actualiza numero de paginas del PDF en el visor
+            var numPagVisor = activarOpciones ?  paginaActual.ToString() : "";
+            var totalPagVisor = activarOpciones ? $" / {totalPaginas.ToString()}" : "";
+            txtNumeroPagina.Text = numPagVisor;
+            txtTotalPaginas.Text = totalPagVisor;
         }
 
 
@@ -480,9 +528,17 @@ namespace VisorPDF
         // Opción de cerrar archivo PDF
         private void archivoCerrarItem_Click(object sender, EventArgs e)
         {
+            // Se borra la ruta del archivo del visor
             rutaArchivoPDF = string.Empty;
-            CargarArchivo();
+            nombreArchivoVisor = string.Empty;
 
+            // Se borra la informacion de las paginas
+            paginaActual = 1;
+            totalPaginas = 1;
+
+            // Actualizar el nombre del archivo en la interfaz
+            ActualizaCamposVisor();
+         
             // TODO: Pendiente de implementar el cierre del archivo PDF en el visor
         }
 
@@ -512,60 +568,136 @@ namespace VisorPDF
         private void fijarConfiguracionItem_Click(object sender, EventArgs e)
         {
             this.TopMost = !this.TopMost;
+            //configuracionFijarVentanaItem.Checked = this.TopMost;
+
+            // Guardamos la configuración
+            Configuracion.ParametrosGenerales.FijarVentana = this.TopMost;
             EstadoVentana();
         }
-
-
-        // Muestra en la interfaz el estado de la ventana (fijada o flotante)
-        private void EstadoVentana()
-        {
-            lbEstadoVentana.Text = this.TopMost ? "Ventana fijada" : "Ventana flotante";
-        }
-
 
         // Alterna entre mostrar la ruta completa o solo el nombre del archivo desde el menu de Configuracion
         private void configuracionRutaCompletaItem_Click(object sender, EventArgs e)
         {
             rutaArchivoCompleta = !rutaArchivoCompleta;
+            //configuracionRutaCompletaItem.Checked = rutaArchivoCompleta;
+
+            // Guardamos la configuración
+            Configuracion.ParametrosGenerales.RutaPDFCompleta = rutaArchivoCompleta;
+
             CargarArchivo();
         }
 
+        // Muestra en la interfaz el estado de la ventana (fijada o flotante)
+        private void EstadoVentana()
+        {
+            lbEstadoVentana.Text = this.TopMost ? "Ventana fijada" : "Ventana flotante";
+            configuracionFijarVentanaItem.Checked = this.TopMost;
+            configuracionRutaCompletaItem.Checked = rutaArchivoCompleta;
+        }
 
+
+
+        #region Gestion de envios
         // Opcion de impresion del archivo PDF
         private void enviarImprimirItem_Click(object sender, EventArgs e)
         {
-            // TODO : Implementar la impresión del archivo PDF
-
-            MessageBox.Show("Funcionalidad de impresión no implementada.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            GestionEnvios.ImprimirPDF();
         }
 
 
         // Opcion de envio por email del archivo PDF
         private void enviarEmailItem_Click(object sender, EventArgs e)
         {
-            // TODO : Implementar el envío de correo con el archivo PDF adjunto
-            //if(string.IsNullOrEmpty(rutaArchivoPDF))
-            //    return;
+            GestionEnvios.EnvioEmail();
+        }
 
-            //if (!File.Exists(rutaArchivoPDF))
-            //    return;
+        #endregion
 
-            //string asunto = Uri.EscapeDataString("Envio documento PDF");
-            //string cuerpo = Uri.EscapeDataString("Adjunto el archivo PDF.");
-            //string mailto = $"mailto:?subject={asunto}&body={cuerpo}&attachment=\"{rutaArchivoPDF}\"";
 
-            //ProcessStartInfo psi = new ProcessStartInfo
-            //{
-            //    FileName = mailto,
-            //    UseShellExecute = true
-            //};
+        #region Navegacion de paginas
 
-            //Process.Start(psi);
+        // Gestiona el cambio de pagina al validar el cuadro de texto
+        private void txtNumeroPagina_Validated(object sender, EventArgs e)
+        {
+            paginaActual = int.TryParse(txtNumeroPagina.Text, out int valor) ? valor : 1;
+            if (paginaActual > totalPaginas)
+            {
+                paginaActual = totalPaginas;
+            }
 
-            MessageBox.Show("Funcionalidad de envío de correo no implementada.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (paginaActual <= 0)
+            {
+                paginaActual = 1;
+            }
+
+
+            ActualizarPaginaActual();
+        }
+
+        // Actualiza el cuadro de texto con la pagina actual
+        private void ActualizarPaginaActual()
+        {
+            txtNumeroPagina.Text = paginaActual.ToString();
         }
 
 
+        // Gestiona el avance a la siguiente pagina
+        private void btnAvance_Click(object sender, EventArgs e)
+        {
+            // Controla si el cuadro de texto de pagina esta habilitado
+            if(txtNumeroPagina.Enabled == false)
+                return;
+
+            if(paginaActual < totalPaginas)
+            {
+                paginaActual += 1;
+            }
+            ActualizarPaginaActual();
+        }
+
+
+        // Gestiona el retroceso a la pagina anterior
+        private void btnRetroceso_Click(object sender, EventArgs e)
+        {
+            // Controla si el cuadro de texto de pagina esta habilitado
+            if(txtNumeroPagina.Enabled == false)
+                return;
+
+            if(paginaActual > 1)
+            {
+                paginaActual -= 1;
+            }
+            ActualizarPaginaActual();
+        }
+
+
+        // Gestiona el salto a la primera pagina
+        private void btnPrimero_Click(object sender, EventArgs e)
+        {
+            // Controla si el cuadro de texto de pagina esta habilitado
+            if(txtNumeroPagina.Enabled == false)
+                return;
+
+            paginaActual = 1;
+            ActualizarPaginaActual();
+        }
+
+
+        // Gestiona el salto a la ultima pagina
+        private void btnUltimo_Click(object sender, EventArgs e)
+        {
+            // Controla si el cuadro de texto de pagina esta habilitado
+            if(txtNumeroPagina.Enabled == false)
+                return;
+
+
+            paginaActual = totalPaginas;
+            ActualizarPaginaActual();
+        }
+        #endregion
+
+
+        #region Arrastre de archivos PDF
         // Gestiona el arrastre de archivos PDF al panel del visor
         private void pnlVisor_DragEnter(object sender, DragEventArgs e)
         {
@@ -595,6 +727,52 @@ namespace VisorPDF
                 rutaArchivoPDF = archivos[0];
                 CargarArchivo();
             }
+        }
+
+        #endregion
+
+
+        #region Gestion de posicion y tamaño de ventana
+        private void frmVisorPDF_ResizeEnd(object sender, EventArgs e)
+        {
+            //// Una vez redimensionada la ventana guardamos la nueva posición y tamaño en la configuración
+            //Configuracion.ActualizarPosicionVentana(
+            //    this.Location.X,
+            //    this.Location.Y,
+            //    this.Size.Width,
+            //    this.Size.Height
+            //    );
+        }
+
+        #endregion
+
+        private void frmVisorPDF_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Una vez redimensionada la ventana guardamos la nueva posición y tamaño en la configuración
+            Configuracion.ActualizarPosicionVentana(
+                this.Location.X,
+                this.Location.Y,
+                this.Size.Width,
+                this.Size.Height
+                );
+        }
+
+        private void btnAjusteAncho_Click(object sender, EventArgs e)
+        {
+            // TODO: Pendiente de implementar el ajuste de ancho
+            MessageBox.Show("Funcionalidad de ajuste de ancho pendiente de implementar.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void btnAjusteAlto_Click(object sender, EventArgs e)
+        {
+            // TODO : Pendiente de implementar el ajuste de alto
+            MessageBox.Show("Funcionalidad de ajuste de alto pendiente de implementar.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void btnAjustePagina_Click(object sender, EventArgs e)
+        {
+            // TODO: Pendiente de implementar el ajuste de página
+            MessageBox.Show("Funcionalidad de ajuste de página pendiente de implementar.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

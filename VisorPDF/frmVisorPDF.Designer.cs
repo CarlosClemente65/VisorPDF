@@ -38,9 +38,14 @@
             btnCerrar = new Button();
             pnlSuperior = new Panel();
             pnlHerramientas = new Panel();
-            txtZoom = new TextBox();
-            btnDisminuir = new Button();
+            cbxZoom = new ComboBox();
+            btnAjustePagina = new Button();
             ctrlPDF = new ImageList(components);
+            btnAjusteAlto = new Button();
+            btnAjusteAncho = new Button();
+            txtTotalPaginas = new TextBox();
+            txtNumeroPagina = new TextBox();
+            btnDisminuir = new Button();
             btnAumentar = new Button();
             btnPrimero = new Button();
             btnRetroceso = new Button();
@@ -84,6 +89,7 @@
             pnlTitulo.Size = new Size(492, 40);
             pnlTitulo.TabIndex = 0;
             pnlTitulo.MouseDown += pnlTitulo_MouseDown;
+            pnlTitulo.MouseUp += pnlTitulo_MouseUp;
             // 
             // label1
             // 
@@ -106,7 +112,7 @@
             btnMaximizar.Location = new Point(410, 5);
             btnMaximizar.Name = "btnMaximizar";
             btnMaximizar.Size = new Size(30, 30);
-            btnMaximizar.TabIndex = 22;
+            btnMaximizar.TabIndex = 41;
             btnMaximizar.UseVisualStyleBackColor = false;
             btnMaximizar.Click += btnMaximizar_Click;
             // 
@@ -130,7 +136,7 @@
             btnMinimizar.Location = new Point(370, 5);
             btnMinimizar.Name = "btnMinimizar";
             btnMinimizar.Size = new Size(30, 30);
-            btnMinimizar.TabIndex = 21;
+            btnMinimizar.TabIndex = 40;
             btnMinimizar.UseVisualStyleBackColor = false;
             btnMinimizar.Click += btnMinimizar_Click;
             // 
@@ -145,7 +151,7 @@
             btnCerrar.Location = new Point(450, 5);
             btnCerrar.Name = "btnCerrar";
             btnCerrar.Size = new Size(30, 30);
-            btnCerrar.TabIndex = 23;
+            btnCerrar.TabIndex = 42;
             btnCerrar.UseVisualStyleBackColor = false;
             btnCerrar.Click += btnCerrar_Click;
             // 
@@ -166,7 +172,12 @@
             // pnlHerramientas
             // 
             pnlHerramientas.BackColor = Color.FromArgb(237, 237, 237);
-            pnlHerramientas.Controls.Add(txtZoom);
+            pnlHerramientas.Controls.Add(cbxZoom);
+            pnlHerramientas.Controls.Add(btnAjustePagina);
+            pnlHerramientas.Controls.Add(btnAjusteAlto);
+            pnlHerramientas.Controls.Add(btnAjusteAncho);
+            pnlHerramientas.Controls.Add(txtTotalPaginas);
+            pnlHerramientas.Controls.Add(txtNumeroPagina);
             pnlHerramientas.Controls.Add(btnDisminuir);
             pnlHerramientas.Controls.Add(btnAumentar);
             pnlHerramientas.Controls.Add(btnPrimero);
@@ -180,35 +191,33 @@
             pnlHerramientas.Size = new Size(492, 30);
             pnlHerramientas.TabIndex = 1;
             // 
-            // txtZoom
+            // cbxZoom
             // 
-            txtZoom.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            txtZoom.BackColor = Color.White;
-            txtZoom.BorderStyle = BorderStyle.None;
-            txtZoom.Font = new Font("Calibri", 11F);
-            txtZoom.ForeColor = Color.Black;
-            txtZoom.Location = new Point(390, 6);
-            txtZoom.Name = "txtZoom";
-            txtZoom.Size = new Size(50, 18);
-            txtZoom.TabIndex = 7;
-            txtZoom.TextAlign = HorizontalAlignment.Center;
-            txtZoom.Validated += txtZoom_Validated;
+            cbxZoom.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            cbxZoom.FlatStyle = FlatStyle.Flat;
+            cbxZoom.FormatString = " %";
+            cbxZoom.FormattingEnabled = true;
+            cbxZoom.Location = new Point(400, 4);
+            cbxZoom.Name = "cbxZoom";
+            cbxZoom.Size = new Size(60, 23);
+            cbxZoom.TabIndex = 26;
+            cbxZoom.Validated += cbxZoom_Validated;
             // 
-            // btnDisminuir
+            // btnAjustePagina
             // 
-            btnDisminuir.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnDisminuir.BackColor = Color.Transparent;
-            btnDisminuir.FlatAppearance.BorderSize = 0;
-            btnDisminuir.FlatStyle = FlatStyle.Flat;
-            btnDisminuir.ImageIndex = 5;
-            btnDisminuir.ImageList = ctrlPDF;
-            btnDisminuir.Location = new Point(450, 2);
-            btnDisminuir.Margin = new Padding(0);
-            btnDisminuir.Name = "btnDisminuir";
-            btnDisminuir.Size = new Size(25, 25);
-            btnDisminuir.TabIndex = 8;
-            btnDisminuir.UseVisualStyleBackColor = false;
-            btnDisminuir.Click += btnDisminuir_Click;
+            btnAjustePagina.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnAjustePagina.BackColor = Color.Transparent;
+            btnAjustePagina.FlatAppearance.BorderSize = 0;
+            btnAjustePagina.FlatStyle = FlatStyle.Flat;
+            btnAjustePagina.ImageIndex = 8;
+            btnAjustePagina.ImageList = ctrlPDF;
+            btnAjustePagina.Location = new Point(350, 2);
+            btnAjustePagina.Margin = new Padding(0);
+            btnAjustePagina.Name = "btnAjustePagina";
+            btnAjustePagina.Size = new Size(25, 25);
+            btnAjustePagina.TabIndex = 25;
+            btnAjustePagina.UseVisualStyleBackColor = false;
+            btnAjustePagina.Click += btnAjustePagina_Click;
             // 
             // ctrlPDF
             // 
@@ -221,6 +230,81 @@
             ctrlPDF.Images.SetKeyName(3, "Ultimo.png");
             ctrlPDF.Images.SetKeyName(4, "Aumentar.png");
             ctrlPDF.Images.SetKeyName(5, "Disminuir.png");
+            ctrlPDF.Images.SetKeyName(6, "Ajuste alto.png");
+            ctrlPDF.Images.SetKeyName(7, "Ajuste ancho.png");
+            ctrlPDF.Images.SetKeyName(8, "Ajuste pagina.png");
+            // 
+            // btnAjusteAlto
+            // 
+            btnAjusteAlto.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnAjusteAlto.BackColor = Color.Transparent;
+            btnAjusteAlto.FlatAppearance.BorderSize = 0;
+            btnAjusteAlto.FlatStyle = FlatStyle.Flat;
+            btnAjusteAlto.ImageIndex = 6;
+            btnAjusteAlto.ImageList = ctrlPDF;
+            btnAjusteAlto.Location = new Point(320, 2);
+            btnAjusteAlto.Margin = new Padding(0);
+            btnAjusteAlto.Name = "btnAjusteAlto";
+            btnAjusteAlto.Size = new Size(25, 25);
+            btnAjusteAlto.TabIndex = 24;
+            btnAjusteAlto.UseVisualStyleBackColor = false;
+            btnAjusteAlto.Click += btnAjusteAlto_Click;
+            // 
+            // btnAjusteAncho
+            // 
+            btnAjusteAncho.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnAjusteAncho.BackColor = Color.Transparent;
+            btnAjusteAncho.FlatAppearance.BorderSize = 0;
+            btnAjusteAncho.FlatStyle = FlatStyle.Flat;
+            btnAjusteAncho.ImageIndex = 7;
+            btnAjusteAncho.ImageList = ctrlPDF;
+            btnAjusteAncho.Location = new Point(290, 2);
+            btnAjusteAncho.Margin = new Padding(0);
+            btnAjusteAncho.Name = "btnAjusteAncho";
+            btnAjusteAncho.Size = new Size(25, 25);
+            btnAjusteAncho.TabIndex = 23;
+            btnAjusteAncho.UseVisualStyleBackColor = false;
+            btnAjusteAncho.Click += btnAjusteAncho_Click;
+            // 
+            // txtTotalPaginas
+            // 
+            txtTotalPaginas.BackColor = Color.Snow;
+            txtTotalPaginas.BorderStyle = BorderStyle.None;
+            txtTotalPaginas.Enabled = false;
+            txtTotalPaginas.Location = new Point(80, 7);
+            txtTotalPaginas.Margin = new Padding(0);
+            txtTotalPaginas.Name = "txtTotalPaginas";
+            txtTotalPaginas.Size = new Size(35, 16);
+            txtTotalPaginas.TabIndex = 0;
+            // 
+            // txtNumeroPagina
+            // 
+            txtNumeroPagina.BackColor = Color.Snow;
+            txtNumeroPagina.BorderStyle = BorderStyle.None;
+            txtNumeroPagina.Enabled = false;
+            txtNumeroPagina.Location = new Point(55, 7);
+            txtNumeroPagina.Margin = new Padding(0);
+            txtNumeroPagina.Name = "txtNumeroPagina";
+            txtNumeroPagina.Size = new Size(25, 16);
+            txtNumeroPagina.TabIndex = 4;
+            txtNumeroPagina.TextAlign = HorizontalAlignment.Right;
+            txtNumeroPagina.Validated += txtNumeroPagina_Validated;
+            // 
+            // btnDisminuir
+            // 
+            btnDisminuir.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnDisminuir.BackColor = Color.Transparent;
+            btnDisminuir.FlatAppearance.BorderSize = 0;
+            btnDisminuir.FlatStyle = FlatStyle.Flat;
+            btnDisminuir.ImageIndex = 5;
+            btnDisminuir.ImageList = ctrlPDF;
+            btnDisminuir.Location = new Point(460, 2);
+            btnDisminuir.Margin = new Padding(0);
+            btnDisminuir.Name = "btnDisminuir";
+            btnDisminuir.Size = new Size(25, 25);
+            btnDisminuir.TabIndex = 22;
+            btnDisminuir.UseVisualStyleBackColor = false;
+            btnDisminuir.Click += btnDisminuir_Click;
             // 
             // btnAumentar
             // 
@@ -230,11 +314,11 @@
             btnAumentar.FlatStyle = FlatStyle.Flat;
             btnAumentar.ImageIndex = 4;
             btnAumentar.ImageList = ctrlPDF;
-            btnAumentar.Location = new Point(350, 2);
+            btnAumentar.Location = new Point(375, 2);
             btnAumentar.Margin = new Padding(0);
             btnAumentar.Name = "btnAumentar";
             btnAumentar.Size = new Size(25, 25);
-            btnAumentar.TabIndex = 6;
+            btnAumentar.TabIndex = 20;
             btnAumentar.UseVisualStyleBackColor = false;
             btnAumentar.Click += btnAumentar_Click;
             // 
@@ -245,12 +329,13 @@
             btnPrimero.FlatStyle = FlatStyle.Flat;
             btnPrimero.ImageIndex = 1;
             btnPrimero.ImageList = ctrlPDF;
-            btnPrimero.Location = new Point(10, 2);
+            btnPrimero.Location = new Point(5, 2);
             btnPrimero.Margin = new Padding(0);
             btnPrimero.Name = "btnPrimero";
             btnPrimero.Size = new Size(25, 25);
             btnPrimero.TabIndex = 2;
             btnPrimero.UseVisualStyleBackColor = false;
+            btnPrimero.Click += btnPrimero_Click;
             // 
             // btnRetroceso
             // 
@@ -259,12 +344,13 @@
             btnRetroceso.FlatStyle = FlatStyle.Flat;
             btnRetroceso.ImageIndex = 2;
             btnRetroceso.ImageList = ctrlPDF;
-            btnRetroceso.Location = new Point(40, 2);
+            btnRetroceso.Location = new Point(30, 2);
             btnRetroceso.Margin = new Padding(0);
             btnRetroceso.Name = "btnRetroceso";
             btnRetroceso.Size = new Size(25, 25);
             btnRetroceso.TabIndex = 3;
             btnRetroceso.UseVisualStyleBackColor = false;
+            btnRetroceso.Click += btnRetroceso_Click;
             // 
             // btnAvance
             // 
@@ -273,12 +359,13 @@
             btnAvance.FlatStyle = FlatStyle.Flat;
             btnAvance.ImageIndex = 0;
             btnAvance.ImageList = ctrlPDF;
-            btnAvance.Location = new Point(70, 2);
+            btnAvance.Location = new Point(115, 2);
             btnAvance.Margin = new Padding(0);
             btnAvance.Name = "btnAvance";
             btnAvance.Size = new Size(25, 25);
-            btnAvance.TabIndex = 4;
+            btnAvance.TabIndex = 5;
             btnAvance.UseVisualStyleBackColor = false;
+            btnAvance.Click += btnAvance_Click;
             // 
             // btnUltimo
             // 
@@ -287,12 +374,13 @@
             btnUltimo.FlatStyle = FlatStyle.Flat;
             btnUltimo.ImageIndex = 3;
             btnUltimo.ImageList = ctrlPDF;
-            btnUltimo.Location = new Point(100, 2);
+            btnUltimo.Location = new Point(140, 2);
             btnUltimo.Margin = new Padding(0);
             btnUltimo.Name = "btnUltimo";
             btnUltimo.Size = new Size(25, 25);
-            btnUltimo.TabIndex = 5;
+            btnUltimo.TabIndex = 6;
             btnUltimo.UseVisualStyleBackColor = false;
+            btnUltimo.Click += btnUltimo_Click;
             // 
             // pnlVisor
             // 
@@ -507,6 +595,8 @@
             Name = "frmVisorPDF";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Form1";
+            FormClosing += frmVisorPDF_FormClosing;
+            ResizeEnd += frmVisorPDF_ResizeEnd;
             pnlTitulo.ResumeLayout(false);
             pnlTitulo.PerformLayout();
             pnlHerramientas.ResumeLayout(false);
@@ -542,7 +632,6 @@
         private Panel pnlIzquierdo;
         private Button btnAumentar;
         private Button btnDisminuir;
-        private TextBox txtZoom;
         private MenuStrip menuStrip;
         private ToolStripMenuItem archivoItem;
         private ToolStripMenuItem abrirToolStripMenuItem;
@@ -560,5 +649,11 @@
         private ToolStripMenuItem envioItem;
         private ToolStripMenuItem enviarImprimirItem;
         private ToolStripMenuItem enviarEmailItem;
+        private TextBox txtNumeroPagina;
+        private TextBox txtTotalPaginas;
+        private Button btnAjusteAncho;
+        private Button btnAjustePagina;
+        private Button btnAjusteAlto;
+        private ComboBox cbxZoom;
     }
 }
