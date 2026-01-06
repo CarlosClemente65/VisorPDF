@@ -197,10 +197,11 @@
             cbxZoom.FlatStyle = FlatStyle.Flat;
             cbxZoom.FormatString = " %";
             cbxZoom.FormattingEnabled = true;
-            cbxZoom.Location = new Point(400, 4);
+            cbxZoom.Location = new Point(380, 4);
             cbxZoom.Name = "cbxZoom";
-            cbxZoom.Size = new Size(60, 23);
+            cbxZoom.Size = new Size(80, 23);
             cbxZoom.TabIndex = 26;
+            cbxZoom.SelectedIndexChanged += cbxZoom_SelectedIndexChanged;
             cbxZoom.Validated += cbxZoom_Validated;
             // 
             // btnAjustePagina
@@ -211,7 +212,7 @@
             btnAjustePagina.FlatStyle = FlatStyle.Flat;
             btnAjustePagina.ImageIndex = 8;
             btnAjustePagina.ImageList = ctrlPDF;
-            btnAjustePagina.Location = new Point(350, 2);
+            btnAjustePagina.Location = new Point(330, 2);
             btnAjustePagina.Margin = new Padding(0);
             btnAjustePagina.Name = "btnAjustePagina";
             btnAjustePagina.Size = new Size(25, 25);
@@ -242,7 +243,7 @@
             btnAjusteAlto.FlatStyle = FlatStyle.Flat;
             btnAjusteAlto.ImageIndex = 6;
             btnAjusteAlto.ImageList = ctrlPDF;
-            btnAjusteAlto.Location = new Point(320, 2);
+            btnAjusteAlto.Location = new Point(300, 2);
             btnAjusteAlto.Margin = new Padding(0);
             btnAjusteAlto.Name = "btnAjusteAlto";
             btnAjusteAlto.Size = new Size(25, 25);
@@ -258,7 +259,7 @@
             btnAjusteAncho.FlatStyle = FlatStyle.Flat;
             btnAjusteAncho.ImageIndex = 7;
             btnAjusteAncho.ImageList = ctrlPDF;
-            btnAjusteAncho.Location = new Point(290, 2);
+            btnAjusteAncho.Location = new Point(270, 2);
             btnAjusteAncho.Margin = new Padding(0);
             btnAjusteAncho.Name = "btnAjusteAncho";
             btnAjusteAncho.Size = new Size(25, 25);
@@ -298,7 +299,7 @@
             btnDisminuir.FlatStyle = FlatStyle.Flat;
             btnDisminuir.ImageIndex = 5;
             btnDisminuir.ImageList = ctrlPDF;
-            btnDisminuir.Location = new Point(460, 2);
+            btnDisminuir.Location = new Point(355, 2);
             btnDisminuir.Margin = new Padding(0);
             btnDisminuir.Name = "btnDisminuir";
             btnDisminuir.Size = new Size(25, 25);
@@ -314,7 +315,7 @@
             btnAumentar.FlatStyle = FlatStyle.Flat;
             btnAumentar.ImageIndex = 4;
             btnAumentar.ImageList = ctrlPDF;
-            btnAumentar.Location = new Point(375, 2);
+            btnAumentar.Location = new Point(460, 2);
             btnAumentar.Margin = new Padding(0);
             btnAumentar.Name = "btnAumentar";
             btnAumentar.Size = new Size(25, 25);
@@ -596,6 +597,7 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Form1";
             FormClosing += frmVisorPDF_FormClosing;
+            Load += frmVisorPDF_Load;
             ResizeEnd += frmVisorPDF_ResizeEnd;
             pnlTitulo.ResumeLayout(false);
             pnlTitulo.PerformLayout();

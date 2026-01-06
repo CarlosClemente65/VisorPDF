@@ -25,4 +25,30 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="C:\Users\carlos\.nuget\packages\pdfium.windows\1.0.0\build\pdfium_x64.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\carlos\.nuget\packages\pdfium.windows\1.0.0\build\pdfium_x86.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\carlos\.nuget\packages\pdfium.windows\1.0.0\build\pdfium_x64.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\carlos\.nuget\packages\pdfium.windows\1.0.0\build\pdfium_x86.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PdfiumViewer" Version="2.13.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="pdfium.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

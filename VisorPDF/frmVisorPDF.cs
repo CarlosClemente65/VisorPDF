@@ -1,6 +1,3 @@
-using System.Configuration;
-using System.Diagnostics;
-using System.Net.Mail;
 using System.Runtime.InteropServices;
 
 
@@ -39,7 +36,8 @@ namespace VisorPDF
         private bool moviendoVentana = false;
 
         // Variables para controlar el zoom
-        private int zoomActual = Configuracion.ParametrosVisor.NivelZoom;
+        public static int zoomActual = Configuracion.ParametrosVisor.NivelZoom;
+        public static PictureBoxSizeMode modoEscalaActual = PictureBoxSizeMode.AutoSize;
 
 
         // Variables para gestionar el archivo PDF
@@ -47,7 +45,12 @@ namespace VisorPDF
         public static string nombreArchivoVisor = string.Empty;
         public static bool rutaArchivoCompleta = Configuracion.ParametrosGenerales.RutaPDFCompleta;
         public static int paginaActual = 1;
-        public static int totalPaginas = 100;
+        public static int totalPaginas = 1;
+
+
+        // Instancia del control del visor PDF
+        private PDFViewerControl visorPdf;
+
 
         public frmVisorPDF()
         {
@@ -104,7 +107,7 @@ namespace VisorPDF
 
         private void btnMaximizar_Click(object sender, EventArgs e)
         {
-            if(WindowState == FormWindowState.Maximized)
+            if (WindowState == FormWindowState.Maximized)
             {
                 WindowState = FormWindowState.Normal;
             }
@@ -123,13 +126,13 @@ namespace VisorPDF
         // Manejo del panel de título para mover y maximizar/restaurar
         private void pnlTitulo_MouseDown(object sender, MouseEventArgs e)
         {
-            if(e.Button != MouseButtons.Left)
+            if (e.Button != MouseButtons.Left)
                 return;
 
             // Doble clic para maximizar/restaurar
-            if(e.Clicks == 2)
+            if (e.Clicks == 2)
             {
-                if(this.WindowState == FormWindowState.Maximized)
+                if (this.WindowState == FormWindowState.Maximized)
                 {
                     this.WindowState = FormWindowState.Normal;
                 }
@@ -156,7 +159,7 @@ namespace VisorPDF
         #region Redimensionamiento de borde derecho
         private void pnlDerecho_MouseDown(object sender, MouseEventArgs e)
         {
-            if(e.Button != MouseButtons.Left)
+            if (e.Button != MouseButtons.Left)
                 return;
 
             ReleaseCapture();
@@ -164,12 +167,12 @@ namespace VisorPDF
             pnlDerecho.Cursor = cursorRedimension;
 
             // Esquina superior derecha
-            if(e.Y <= MARGEN_ESQUINA)
+            if (e.Y <= MARGEN_ESQUINA)
             {
                 SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTTOPRIGHT, 0);
             }
             // Esquina inferior derecha
-            else if(e.Y >= pnlDerecho.Height - MARGEN_ESQUINA)
+            else if (e.Y >= pnlDerecho.Height - MARGEN_ESQUINA)
             {
                 SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTBOTTOMRIGHT, 0);
             }
@@ -192,12 +195,12 @@ namespace VisorPDF
         private void pnlDerecho_MouseMove(object sender, MouseEventArgs e)
         {
             // Esquina superior derecha
-            if(e.Y <= MARGEN_ESQUINA)
+            if (e.Y <= MARGEN_ESQUINA)
             {
                 cursorRedimension = Cursors.SizeNESW;
             }
             // Esquina inferior derecha
-            else if(e.Y >= pnlDerecho.Height - MARGEN_ESQUINA)
+            else if (e.Y >= pnlDerecho.Height - MARGEN_ESQUINA)
             {
                 cursorRedimension = Cursors.SizeNWSE;
             }
@@ -214,7 +217,7 @@ namespace VisorPDF
         // Manejo del borde derecho al salir del área (restaura el cursor)
         private void pnlDerecho_MouseLeave(object sender, EventArgs e)
         {
-            if(!redimensionandoVentana)
+            if (!redimensionandoVentana)
             {
                 pnlDerecho.Cursor = Cursors.Default;
             }
@@ -227,7 +230,7 @@ namespace VisorPDF
         #region Redimensionamiento de borde izquierdo
         private void pnlIzquierdo_MouseDown(object sender, MouseEventArgs e)
         {
-            if(e.Button != MouseButtons.Left)
+            if (e.Button != MouseButtons.Left)
                 return;
 
             ReleaseCapture();
@@ -235,12 +238,12 @@ namespace VisorPDF
             pnlIzquierdo.Cursor = cursorRedimension;
 
             // Esquina superior izquierda
-            if(e.Y <= MARGEN_ESQUINA)
+            if (e.Y <= MARGEN_ESQUINA)
             {
                 SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTTOPLEFT, 0);
             }
             // Esquina inferior izquierda
-            else if(e.Y >= pnlIzquierdo.Height - MARGEN_ESQUINA)
+            else if (e.Y >= pnlIzquierdo.Height - MARGEN_ESQUINA)
             {
                 SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTBOTTOMLEFT, 0);
             }
@@ -263,12 +266,12 @@ namespace VisorPDF
         private void pnlIzquierdo_MouseMove(object sender, MouseEventArgs e)
         {
             // Esquina superior izquierda
-            if(e.Y <= MARGEN_ESQUINA)
+            if (e.Y <= MARGEN_ESQUINA)
             {
                 cursorRedimension = Cursors.SizeNWSE;
             }
             // Esquina inferior izquierda
-            else if(e.Y >= pnlIzquierdo.Height - MARGEN_ESQUINA)
+            else if (e.Y >= pnlIzquierdo.Height - MARGEN_ESQUINA)
             {
                 cursorRedimension = Cursors.SizeNESW;
             }
@@ -285,7 +288,7 @@ namespace VisorPDF
         // Manejo del borde izquierdo al salir del área (restaura el cursor)
         private void pnlIzquierdo_MouseLeave(object sender, EventArgs e)
         {
-            if(!redimensionandoVentana)
+            if (!redimensionandoVentana)
             {
                 pnlIzquierdo.Cursor = Cursors.Default;
             }
@@ -300,7 +303,7 @@ namespace VisorPDF
         // Manejo del borde superior al hacer clic (permite mover y redimensionar)
         private void pnlSuperior_MouseDown(object sender, MouseEventArgs e)
         {
-            if(e.Button != MouseButtons.Left)
+            if (e.Button != MouseButtons.Left)
                 return;
 
             ReleaseCapture();
@@ -308,12 +311,12 @@ namespace VisorPDF
             pnlSuperior.Cursor = cursorRedimension;
 
             // Esquina superior izquierda
-            if(e.X <= MARGEN_ESQUINA)
+            if (e.X <= MARGEN_ESQUINA)
             {
                 SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTTOPLEFT, 0);
             }
             // Esquina superior derecha
-            else if(e.X >= pnlSuperior.Width - MARGEN_ESQUINA)
+            else if (e.X >= pnlSuperior.Width - MARGEN_ESQUINA)
             {
                 SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTTOPRIGHT, 0);
             }
@@ -337,12 +340,12 @@ namespace VisorPDF
         private void pnlSuperior_MouseMove(object sender, MouseEventArgs e)
         {
             // Esquina superior izquierda
-            if(e.X <= MARGEN_ESQUINA)
+            if (e.X <= MARGEN_ESQUINA)
             {
                 cursorRedimension = Cursors.SizeNWSE;
             }
             // Esquina superior derecha
-            else if(e.X >= pnlSuperior.Width - MARGEN_ESQUINA)
+            else if (e.X >= pnlSuperior.Width - MARGEN_ESQUINA)
             {
                 cursorRedimension = Cursors.SizeNESW;
             }
@@ -359,7 +362,7 @@ namespace VisorPDF
         // Manejo del borde superior al salir del área (restaura el cursor)
         private void pnlSuperior_MouseLeave(object sender, EventArgs e)
         {
-            if(!redimensionandoVentana)
+            if (!redimensionandoVentana)
             {
                 pnlSuperior.Cursor = Cursors.Default;
             }
@@ -372,7 +375,7 @@ namespace VisorPDF
         #region Redimensionamiento de borde inferior
         private void pnlInferior_MouseDown(object sender, MouseEventArgs e)
         {
-            if(e.Button != MouseButtons.Left)
+            if (e.Button != MouseButtons.Left)
                 return;
 
             ReleaseCapture();
@@ -380,12 +383,12 @@ namespace VisorPDF
             pnlInferior.Cursor = cursorRedimension;
 
             // Esquina inferior izquierda
-            if(e.X <= MARGEN_ESQUINA)
+            if (e.X <= MARGEN_ESQUINA)
             {
                 SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTBOTTOMLEFT, 0);
             }
             // Esquina inferior derecha
-            else if(e.X >= pnlInferior.Width - MARGEN_ESQUINA)
+            else if (e.X >= pnlInferior.Width - MARGEN_ESQUINA)
             {
                 SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTBOTTOMRIGHT, 0);
             }
@@ -408,12 +411,12 @@ namespace VisorPDF
         private void pnlInferior_MouseMove(object sender, MouseEventArgs e)
         {
             // Esquina inferior izquierda
-            if(e.X <= MARGEN_ESQUINA)
+            if (e.X <= MARGEN_ESQUINA)
             {
                 cursorRedimension = Cursors.SizeNESW;
             }
             // Esquina inferior derecha
-            else if(e.X >= pnlInferior.Width - MARGEN_ESQUINA)
+            else if (e.X >= pnlInferior.Width - MARGEN_ESQUINA)
             {
                 cursorRedimension = Cursors.SizeNWSE;
             }
@@ -430,11 +433,10 @@ namespace VisorPDF
         // Manejo del borde inferior al salir del área (restaura el cursor)
         private void pnlInferior_MouseLeave(object sender, EventArgs e)
         {
-            if(!redimensionandoVentana)
+            if (!redimensionandoVentana)
             {
                 pnlInferior.Cursor = Cursors.Default;
             }
-
         }
 
 
@@ -444,27 +446,91 @@ namespace VisorPDF
         #region Control de Zoom
         private void btnAumentar_Click(object sender, EventArgs e)
         {
-            if(zoomActual < 500)
+            if (zoomActual < 500)
             {
                 zoomActual += 10;
             }
+
+            visorPdf.ajustarEscala = PDFViewerControl.TipoEscala.ZoomPersonalizado;
             ActualizarZoom();
+            visorPdf.recalcularImagen = true; // Al modificar elzoom se recalcula la imagen
         }
 
         private void btnDisminuir_Click(object sender, EventArgs e)
         {
-            if(zoomActual > 10)
+            if (zoomActual > 10)
             {
                 zoomActual -= 10;
             }
+
+            visorPdf.ajustarEscala = PDFViewerControl.TipoEscala.ZoomPersonalizado;
             ActualizarZoom();
+            visorPdf.recalcularImagen = true; // Al modificar elzoom se recalcula la imagen
         }
 
         private void cbxZoom_Validated(object sender, EventArgs e)
         {
+            txtNumeroPagina.Focus();
+            AplicarZoom();
+        }
+
+        private void cbxZoom_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            txtNumeroPagina.Focus();
+            AplicarZoom();
+        }
+
+        private void btnAjusteAncho_Click(object sender, EventArgs e)
+        {
+            // Aplicar el ajuste de ancho
+            if (visorPdf != null)
+            {
+                visorPdf.ajustarEscala = PDFViewerControl.TipoEscala.AjusteAncho;
+                visorPdf.ActualizarZoom();
+                cbxZoom.Text = visorPdf.ZoomAplicado.ToString("0.##") + " %";
+                visorPdf.recalcularImagen = false; // En el ajuste al ancho no se recalcula la imagen
+            }
+        }
+
+        private void btnAjusteAlto_Click(object sender, EventArgs e)
+        {
+            // Aplicar el ajuste de alto
+            if (visorPdf != null)
+            {
+                visorPdf.ajustarEscala = PDFViewerControl.TipoEscala.AjusteAlto;
+                visorPdf.ActualizarZoom();
+                cbxZoom.Text = visorPdf.ZoomAplicado.ToString("0.##") + " %";
+                visorPdf.recalcularImagen = false; // En el ajuste al alto no se recalcula la imagen
+            }
+        }
+
+        private void btnAjustePagina_Click(object sender, EventArgs e)
+        {
+            // Aplicar el ajuste a la pagina
+            if (visorPdf != null)
+            {
+                visorPdf.ajustarEscala = PDFViewerControl.TipoEscala.AjustePagina;
+                visorPdf.ActualizarZoom();
+                cbxZoom.Text = visorPdf.ZoomAplicado.ToString("0.##") + " %";
+                visorPdf.recalcularImagen = false; // En el ajuste al ancho no se recalcula la imagen
+            }
+        }
+
+        private void AplicarZoom()
+        {
+            // Evitar errores si el visor no está inicializado
+            if (visorPdf == null)
+            {
+                return;
+            }
+
+            // Obtener el valor del zoom del comboBox
             string textoZoom = cbxZoom.Text.Replace("%", "");
             zoomActual = Math.Max(10, Math.Min(500, int.TryParse(textoZoom, out int valor) ? valor : 100));
+
+            visorPdf.ajustarEscala = PDFViewerControl.TipoEscala.ZoomPersonalizado;
             ActualizarZoom();
+            visorPdf.recalcularImagen = true; // Al modificar elzoom se recalcula la imagen
 
             cbxZoom.Text = $"{zoomActual} %";
         }
@@ -473,6 +539,10 @@ namespace VisorPDF
         {
             cbxZoom.Text = $"{zoomActual} %";
             Configuracion.ParametrosVisor.NivelZoom = zoomActual;
+            if (visorPdf != null)
+            {
+                visorPdf.ActualizarZoom();
+            }
         }
 
         #endregion
@@ -482,14 +552,18 @@ namespace VisorPDF
         private void CargarArchivo()
         {
             // Obtenemos el nombre del archivo según la configuración
-            if(!string.IsNullOrEmpty(rutaArchivoPDF))
+            if (!string.IsNullOrEmpty(rutaArchivoPDF))
             {
                 nombreArchivoVisor = rutaArchivoCompleta ? Path.GetFullPath(rutaArchivoPDF) : Path.GetFileName(rutaArchivoPDF);
             }
 
-            ActualizaCamposVisor();
+            // Carga el archivo PDF en el visor
+            if (visorPdf != null && !string.IsNullOrEmpty(rutaArchivoPDF))
+            {
+                visorPdf.CargarPdf(rutaArchivoPDF);
+            }
 
-            // TODO: Pendiente de implementar la carga del archivo PDF en el visor
+            ActualizaCamposVisor();
 
         }
 
@@ -507,7 +581,7 @@ namespace VisorPDF
             txtNumeroPagina.Enabled = activarOpciones;
 
             // Actualiza numero de paginas del PDF en el visor
-            var numPagVisor = activarOpciones ?  paginaActual.ToString() : "";
+            var numPagVisor = activarOpciones ? paginaActual.ToString() : "";
             var totalPagVisor = activarOpciones ? $" / {totalPaginas.ToString()}" : "";
             txtNumeroPagina.Text = numPagVisor;
             txtTotalPaginas.Text = totalPagVisor;
@@ -538,15 +612,19 @@ namespace VisorPDF
 
             // Actualizar el nombre del archivo en la interfaz
             ActualizaCamposVisor();
-         
-            // TODO: Pendiente de implementar el cierre del archivo PDF en el visor
+
+            // Limpiamos el visor PDF
+            visorPdf.LimpiarVisor();
+
+            // Limpiamos el documento PDF cargado en el visor
+            visorPdf.CerrarDocumento();
         }
 
 
         // Opción de guardar como archivo PDF
         private void archivoGuardarComoItem_Click(object sender, EventArgs e)
         {
-            if(string.IsNullOrEmpty(rutaArchivoPDF))
+            if (string.IsNullOrEmpty(rutaArchivoPDF))
                 return;
 
             SaveFileDialog sfd = new SaveFileDialog
@@ -556,7 +634,7 @@ namespace VisorPDF
                 FileName = Path.GetFileName(rutaArchivoPDF)
             };
 
-            if(sfd.ShowDialog() == DialogResult.OK)
+            if (sfd.ShowDialog() == DialogResult.OK)
             {
                 File.Copy(rutaArchivoPDF, sfd.FileName, true);
             }
@@ -630,14 +708,17 @@ namespace VisorPDF
                 paginaActual = 1;
             }
 
-
             ActualizarPaginaActual();
+
         }
 
         // Actualiza el cuadro de texto con la pagina actual
         private void ActualizarPaginaActual()
         {
             txtNumeroPagina.Text = paginaActual.ToString();
+
+            // Muestra la pagina actual en el visor PDF
+            visorPdf.MostrarPagina(paginaActual);
         }
 
 
@@ -645,13 +726,14 @@ namespace VisorPDF
         private void btnAvance_Click(object sender, EventArgs e)
         {
             // Controla si el cuadro de texto de pagina esta habilitado
-            if(txtNumeroPagina.Enabled == false)
+            if (txtNumeroPagina.Enabled == false)
                 return;
 
-            if(paginaActual < totalPaginas)
+            if (paginaActual < totalPaginas)
             {
                 paginaActual += 1;
             }
+
             ActualizarPaginaActual();
         }
 
@@ -660,13 +742,14 @@ namespace VisorPDF
         private void btnRetroceso_Click(object sender, EventArgs e)
         {
             // Controla si el cuadro de texto de pagina esta habilitado
-            if(txtNumeroPagina.Enabled == false)
+            if (txtNumeroPagina.Enabled == false)
                 return;
 
-            if(paginaActual > 1)
+            if (paginaActual > 1)
             {
                 paginaActual -= 1;
             }
+
             ActualizarPaginaActual();
         }
 
@@ -675,10 +758,11 @@ namespace VisorPDF
         private void btnPrimero_Click(object sender, EventArgs e)
         {
             // Controla si el cuadro de texto de pagina esta habilitado
-            if(txtNumeroPagina.Enabled == false)
+            if (txtNumeroPagina.Enabled == false)
                 return;
 
             paginaActual = 1;
+
             ActualizarPaginaActual();
         }
 
@@ -687,7 +771,7 @@ namespace VisorPDF
         private void btnUltimo_Click(object sender, EventArgs e)
         {
             // Controla si el cuadro de texto de pagina esta habilitado
-            if(txtNumeroPagina.Enabled == false)
+            if (txtNumeroPagina.Enabled == false)
                 return;
 
 
@@ -701,11 +785,11 @@ namespace VisorPDF
         // Gestiona el arrastre de archivos PDF al panel del visor
         private void pnlVisor_DragEnter(object sender, DragEventArgs e)
         {
-            if(e.Data.GetDataPresent(DataFormats.FileDrop))
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] archivos = (string[])e.Data.GetData(DataFormats.FileDrop);
 
-                if(archivos.Length > 0 && Path.GetExtension(archivos[0]).ToLower() == ".pdf")
+                if (archivos.Length > 0 && Path.GetExtension(archivos[0]).ToLower() == ".pdf")
                 {
                     e.Effect = DragDropEffects.Copy;
                 }
@@ -722,7 +806,7 @@ namespace VisorPDF
         {
             string[] archivos = (string[])e.Data.GetData(DataFormats.FileDrop);
 
-            if(archivos.Length > 0 && Path.GetExtension(archivos[0]).ToLower() == ".pdf")
+            if (archivos.Length > 0 && Path.GetExtension(archivos[0]).ToLower() == ".pdf")
             {
                 rutaArchivoPDF = archivos[0];
                 CargarArchivo();
@@ -735,13 +819,9 @@ namespace VisorPDF
         #region Gestion de posicion y tamaño de ventana
         private void frmVisorPDF_ResizeEnd(object sender, EventArgs e)
         {
-            //// Una vez redimensionada la ventana guardamos la nueva posición y tamaño en la configuración
-            //Configuracion.ActualizarPosicionVentana(
-            //    this.Location.X,
-            //    this.Location.Y,
-            //    this.Size.Width,
-            //    this.Size.Height
-            //    );
+            // Al finalizar el redimensionamiento de la ventana se recalcula la posicion del PDF en el visor
+            visorPdf.MostrarPagina(paginaActual);
+
         }
 
         #endregion
@@ -757,22 +837,17 @@ namespace VisorPDF
                 );
         }
 
-        private void btnAjusteAncho_Click(object sender, EventArgs e)
+
+
+        private void frmVisorPDF_Load(object sender, EventArgs e)
         {
-            // TODO: Pendiente de implementar el ajuste de ancho
-            MessageBox.Show("Funcionalidad de ajuste de ancho pendiente de implementar.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            visorPdf = new PDFViewerControl();
+            visorPdf.Dock = DockStyle.Fill;
+
+            pnlVisor.Controls.Clear();
+            pnlVisor.Controls.Add(visorPdf);
         }
 
-        private void btnAjusteAlto_Click(object sender, EventArgs e)
-        {
-            // TODO : Pendiente de implementar el ajuste de alto
-            MessageBox.Show("Funcionalidad de ajuste de alto pendiente de implementar.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
 
-        private void btnAjustePagina_Click(object sender, EventArgs e)
-        {
-            // TODO: Pendiente de implementar el ajuste de página
-            MessageBox.Show("Funcionalidad de ajuste de página pendiente de implementar.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
     }
 }
